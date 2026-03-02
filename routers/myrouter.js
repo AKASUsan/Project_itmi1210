@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+const connectDB = require("../config/db")
+
 router.get("/", (req, res) => {
-    console.log("Hello")
   res.render("index");
 });
 
