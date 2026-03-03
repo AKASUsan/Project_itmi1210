@@ -1,10 +1,10 @@
 <nav class="bg-mist-100/50 p-4 mx-auto w-4xl mt-4 rounded-4xl shadow-xl shadow-indigo-100">
-    <div class=" mx-auto flex pl-7 gap-20">
+    <div class=" mx-auto flex pl-7 gap-10">
         <a href="/" class="text-black text-xl font-bold">POS</a>
         <ul class="navbar-nav flex gap-4">
             <li>
                 <a href="/"
-                    class="transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110  px-5 p-2 rounded-xl hover:border-b-3 hover:border-mauve-600 hover:bg-zinc-200">
+                    class="transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110  px-5 p-2 rounded-xl hover:border-b-3 hover:border-mauve-600 hover:bg-zinc-200 hover:shadow-indigo-100">
                     Home
                 </a>
             </li>
@@ -15,7 +15,7 @@
                 </a>
             </li>
         </ul>
-        <ul class="flex justify-items-end-safe mx-auto ">
+        <ul class="flex mx-75 ">
             <li>
                 <a href="/login"
                     class="transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110  px-6 p-2 rounded-xl bg-rose-900 hover:border-b-3 hover:border-mauve-600 hover:bg-slate-200 text-white hover:text-black">
@@ -30,7 +30,6 @@
                 </a>
             </li>
         </ul>
-
         <ul>
             <div class="relative inline-block text-left">
                 <button id="options-menu-button" type="button"
@@ -88,6 +87,15 @@
         // ถ้าคลิกข้างนอก และเมนูเปิดอยู่ (ดูจากว่าไม่มีคลาส opacity-0) ให้ปิดเมนู
         if (!button.contains(event.target) && !menu.contains(event.target) && !menu.classList.contains('opacity-0')) {
             toggleMenu();
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        // สมมติว่าคุณเก็บสถานะล็อกอินไว้ใน variable หรือ localStorage
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        const menuButton = document.querySelector('.relative.inline-block');
+
+        if (!isLoggedIn) {
+            menuButton.style.display = 'none'; // ซ่อนถ้ายังไม่ล็อกอิน
         }
     });
 </script>
