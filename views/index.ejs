@@ -12,14 +12,12 @@
 <body>
     <%- include('navbar.ejs') %>
 
-        <div
-            class="relative bg-[url('/images/background/Ramem4.jpg')] bg-cover bg-center h-[500px] w-full flex items-center justify-center">
+        <div class="relative bg-[url('/images/background/Ramem4.jpg')] bg-cover bg-center h-[500px] w-full flex items-center justify-center">
 
             <div class="absolute inset-0 bg-black/40"></div>
 
             <div class="relative z-10 w-max">
-                <div
-                    class="flex min-h-screen items-center justify-center bg-gradient-to-tr to-blue-700 from-indigo-900 p-10">
+                <div class="flex min-h-screen items-center justify-center  p-10">
                     <div class="w-max">
                         <h1
                             class="animate-typing overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-5 text-5xl text-white font-bold">
@@ -28,7 +26,14 @@
                     </div>
                 </div>
             </div>
-            
+
+        </div>
+
+        <div class="relative bg-white/50 h-150 mt-2 flex justify-self-center w-[119rem] rounded-4xl ">
+            <div class="absolute inset-0 bg-black/40 rounded-4xl">
+                 <div class="absolute bg-[url('/images/background/harrison-chang.jpg')] bg-cover h-[600px] w-150 flex justify-self-end-safe rounded-r-4xl"></div>
+            </div>
+             
         </div>
         <div class="container mx-auto px-4">
 
@@ -51,7 +56,7 @@
                 </div>
             </div>
         </div>
-         <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
         <script>
             tailwind.config = {
                 theme: {
@@ -83,7 +88,7 @@
                 plugins: [],
             }
         </script>
-       
+
 </body>
 
 </html>
