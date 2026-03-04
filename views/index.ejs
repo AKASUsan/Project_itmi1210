@@ -6,17 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-
+    <script src="../public/js/tailwind.config.js"></script>
 </head>
 
 <body>
     <%- include('navbar.ejs') %>
 
         <div
-            class="relative bg-[url('/images/background/Ramem4.jpg')] bg-cover bg-center h-[500px] w-full  flex items-center justify-center">
+            class="relative bg-[url('/images/background/Ramem4.jpg')] bg-cover bg-center h-[500px] w-full flex items-center justify-center">
             <div class="absolute inset-0 bg-black/40"></div>
             <div class="relative z-10 w-max">
-                <div class="flex min-h-screen items-center justify-center  p-10">
+                <div class="flex min-h-screen items-center justify-center p-10">
                     <div class="w-max">
                         <h1
                             class="animate-typing overflow-hidden whitespace-nowrap border-r-4 border-r-white pr-5 leading-tight pb-2 text-5xl text-white font-bold">
@@ -27,14 +27,25 @@
             </div>
         </div>
 
-        <div class="relative bg-white/50 h-150 mt-2 flex justify-self-center w-[119rem] rounded-4xl ">
-            <div class="absolute inset-0 bg-black/40 rounded-4xl">
+        <div class="relative  h-150 mt-2 flex justify-self-center w-[100rem] rounded-4xl ">
+            <div class="absolute inset-1 rounded-4xl">
                 <div
-                    class="absolute bg-[url('/images/background/harrison-chang.jpg')] bg-cover h-[600px] w-150 flex justify-self-end-safe rounded-r-4xl">
+                    class="absolute bg-[url('/images/background/kouji-tsuru.jpg')] bg-cover h-[600px] w-150 flex justify-self-end-safe  shadow-black  rounded-4xl shadow-lg motion-preset-bounce hover:animate-slideInUp">
                 </div>
-            </div>
+                <div class="grid h-100 grid-cols-2 place-items-center ">
+                    <div class="grid h-50 grid-cols-1 place-items-center ">
+                        <h1 class="text-5xl ">Ramen Tonkkatsu</h1>
+                        <p class="text-xl p-4">"ราเมงของเราไม่ใช่แค่บะหมี่น้ำ แต่คือผลึกของเวลาและความพยายาม
+                            เราเริ่มต้นจาก 'น้ำซุป'
+                            ที่เคี่ยวกรำนานหลายสิบชั่วโมงจนได้ความเข้มข้นระดับโมเลกุล ผสมผสานกับ 'เส้นสด'
+                            ที่เรานวดเองมือต่อมือ เพื่อให้ได้ความเหนียวนุ่มที่รับกับน้ำซุปได้อย่างสมบูรณ์แบบ
+                            ท็อปด้วยหมูชาชูที่นุ่มจนแทบละลายในปาก... นี่คือรสชาติแบบดั้งเดิมที่เราอยากให้คุณสัมผัส"</p>
+                    </div>
+                </div>
 
+            </div>
         </div>
+
         <div class="container mx-auto px-4">
 
             <div class="row mx-auto">
