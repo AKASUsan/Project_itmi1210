@@ -1,85 +1,57 @@
-<!--- 
-TODO: เปลี่ยนnavbarใหม่ และทำให้โค้ดสระอาดกว่านี้
-ทำเรื่องอนิเมชั่นใหม่ ปุ่มธีมขาว/ดำ 
-ไอคอน ผู้ใช้กับไอคอนร้าน
--->
-<nav class="fixed top-4 inset-x-0 mx-auto z-50 w-[95%] max-w-4xl">
-    <div
-        class="bg-white/60 backdrop-blur-md p-4 rounded-4xl shadow-xl shadow-indigo-100 flex items-center justify-between px-10 pr-30 ">
+<script src="https://unpkg.com/lucide@latest"></script>
 
-        <div class="flex items-center gap-10">
-            <a href="/" class="text-black text-xl font-bold">POS</a>
-            <ul class="navbar-nav flex gap-4">
-                <li>
-                    <a href="/"
-                        class="transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 px-5 py-2 rounded-xl hover:bg-zinc-300 block">Home</a>
-                </li>
-                <li>
-                    <a href="/"
-                        class="transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 px-5 py-2 rounded-xl hover:bg-zinc-300 block">Menu</a>
-                </li>
-            </ul>
-        </div>
-        <div class="flex items-center gap-4">
-            <ul class="flex gap-2">
-                <li>
-                    <a href="/login"
-                        class="transition duration-300 px-6 py-2 rounded-xl bg-rose-900 text-white hover:bg-purple-300 block text-sm">Login</a>
-                </li>
-                <li>
-                    <a href="/register"
-                        class="transition duration-300 px-6 py-2 rounded-xl bg-rose-600 text-white hover:bg-purple-400 block text-sm">Register</a>
+<nav
+    class="fixed top-0 left-0 w-full z-[100] transition-all duration-300 shadow-lg p-4 bg-orange-500/20 backdrop-blur-md dark:bg-neutral-950/80 border-b border-white/10">
+    <div class="container mx-auto flex justify-between items-center">
+
+        <a href="#" class="flex items-center gap-2 group">
+            <div
+                class="h-10 w-10 bg-[url(/images/icon/ramen_w.png)] bg-cover transition-transform group-hover:rotate-12 dark:bg-[url(/images/icon/ramen_d.png)]">
+            </div>
+            <span class="text-white font-bold text-xl tracking-tighter hidden md:block">KAIZEN</span>
+        </a>
+
+        <div class="flex items-center gap-1 md:gap-4">
+            <ul class="hidden lg:flex items-center text-white font-medium">
+                <li><a href="#" class="px-4 py-2 rounded-full hover:bg-white/20 transition duration-300">Home</a></li>
+                <li><a href="#" class="px-4 py-2 rounded-full hover:bg-white/20 transition duration-300">Menu</a></li>
+                <li><a href="#" class="px-4 py-2 rounded-full hover:bg-white/20 transition duration-300">About</a></li>
+                <li><a href="#" class="px-4 py-2 rounded-full hover:bg-white/20 transition duration-300">Contact</a>
                 </li>
             </ul>
 
-            <div class="relative inline-block text-left">
-                <button id="options-menu-button" type="button"
-                    class="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                    </svg>
+            <div class="h-8 w-[1px] bg-white/20 mx-2 hidden lg:block"></div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="toggleTheme()"
+                    class="p-2 text-white hover:bg-white/20 rounded-full transition duration-300">
+                    <i data-lucide="sun" class="w-5 h-5 dark:hidden"></i>
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
                 </button>
 
-                <div id="options-menu"
-                    class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-600 rounded-md bg-gray-800 shadow-lg ring-1 ring-black/5 focus:outline-none transition-all duration-200 opacity-0 scale-95 pointer-events-none">
-                    <div class="py-1">
-                        <a href="#"
-                            class="flex items-center gap-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Edit</a>
-                        <a href="#"
-                            class="flex items-center gap-x-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Duplicate</a>
-                    </div>
-                </div>
+                <a href="#"
+                    class="flex items-center gap-2 px-6 py-2 bg-orange-600 hover:bg-orange-500 text-white rounded-full font-bold shadow-lg transition-all duration-300 active:scale-95">
+                    <span class="text-sm">Register</span>
+                </a>
+
+                <a href="#"
+                    class="flex items-center gap-2 px-6 py-2 border-2 border-orange-600 text-orange-600 hover:bg-orange-50 rounded-full font-bold transition-all duration-300 active:scale-95">
+                    <span class="text-sm">Sign In</span>
+                </a>
             </div>
         </div>
     </div>
 </nav>
+
 <script>
-    const button = document.getElementById('options-menu-button');
-    const menu = document.getElementById('options-menu');
-
-    // ฟังก์ชันสำหรับเปิด-ปิดเมนู โดยสลับคลาสแอนิเมชัน
-    const toggleMenu = () => {
-        menu.classList.toggle('opacity-0');
-        menu.classList.toggle('scale-95');
-        menu.classList.toggle('pointer-events-none');
-    };
-
-    button.addEventListener('click', toggleMenu);
-
-    window.addEventListener('click', (event) => {
-        if (!button.contains(event.target) && !menu.contains(event.target) && !menu.classList.contains('opacity-0')) {
-            toggleMenu();
+    tailwind.config = {
+        darkMode: 'class',
+        theme: {
+            extend: {
+                colors: {
+                    clifford: '#ada397',
+                }
+            }
         }
-    });
-    document.addEventListener('DOMContentLoaded', function () {
-
-        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-        const menuButton = document.querySelector('.relative.inline-block');
-
-        if (!isLoggedIn) {
-            menuButton.style.display = 'none';
-        }
-    });
+    }
 </script>
