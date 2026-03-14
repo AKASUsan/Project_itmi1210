@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
+
 const connectDB = require("../config/db")
-const Member = require("../models/members");
+
 const Product = require("../models/products")
+
 
 router.get("/",  async (req, res) => {
   const title = "Home";

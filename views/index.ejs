@@ -1,25 +1,6 @@
-<!--
-TODO:ออกแบบหน้าเว็บใหม่จัดการเรื่องอนิเมชั่นให้โค้ดสระอาด
-    ทำเรื่องอนิเมชั่นกับปุ่ม สินค้า 
--->
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        <%= title %>
-    </title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="/css/input.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gluten:wght@100..900&family=Itim&family=Macondo&display=swap"
-        rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
-</head>
+<%- include('head.ejs') %>
 
 <body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-white transition-colors duration-500">
     <%- include('navbar.ejs') %>
@@ -50,7 +31,7 @@ TODO:ออกแบบหน้าเว็บใหม่จัดการเ
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                    <a href="#menu" data-aos="zoom-in" data-aos-delay="300"
+                    <a href="/menu" data-aos="zoom-in" data-aos-delay="300"
                         class="group relative px-10 py-4 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all duration-300 font-bold text-lg shadow-xl hover:scale-110 active:scale-95 overflow-hidden">
                         <span class="relative z-10">EXPLORE MENU</span>
                     </a>
