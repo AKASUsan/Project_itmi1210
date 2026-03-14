@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Register
+    </title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="/css/input.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gluten:wght@100..900&family=Itim&family=Macondo&display=swap"
+        rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body
+    class="relative min-h-screen text-gray-900 bg-[url('/images/background/bg-ramen.jpg')] bg-cover bg-center bg-fixed dark:text-white transition-colors duration-500">
+
+    <div class="absolute inset-0 bg-white/70 dark:bg-black/80 backdrop-blur-sm z-0 transition-colors duration-500">
+    </div>
+
+    <div class="relative min-h-screen flex items-center justify-center p-4 z-10">
+
+        <div
+            class="w-full max-w-4xl bg-white/90 dark:bg-[#0f172a]/30 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-gray-200 dark:border-slate-700/80 overflow-hidden flex flex-col md:flex-row transition-colors duration-500">
+
+            <div class="w-full md:w-5/12 relative min-h-[250px] md:min-h-full">
+                <img src="/images/background/Ramen.jpg" alt="Kaizen Ramen"
+                    class="absolute inset-0 w-full h-full object-cover">
+
+                <div
+                    class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-white via-white/50 dark:from-[#0f172a] dark:via-[#0f172a]/50 to-transparent transition-colors duration-500">
+                </div>
+
+                <div class="absolute bottom-6 left-6 right-6 hidden md:block text-left">
+                    <p class="text-gray-800 dark:text-white/80 text-sm font-medium tracking-wide italic">
+                        "Crafting
+                        perfection in every bowl."</p>
+                </div>
+            </div>
+
+            <div class="w-full md:w-7/12 p-8 sm:p-12 flex flex-col justify-center">
+
+                <div class="text-left mb-8">
+                    <h1
+                        class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 uppercase tracking-widest drop-shadow-sm mb-2">
+                        Register
+                    </h1>
+                    <p class="text-gray-500 dark:text-slate-400 text-sm font-medium tracking-wide">Create your
+                        KAIZEN RAMEN account</p>
+                </div>
+                <% if (typeof error !=="undefined" && error) { %>
+                    <div class="flex items-start sm:items-center gap-3 p-4 mb-6 text-sm border rounded-xl bg-red-50 border-red-200 text-red-600 dark:bg-red-900/20 dark:border-red-800/50 dark:text-red-400 transition-colors duration-300 shadow-sm"
+                        role="alert">
+                        <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0 mt-0.5 sm:mt-0"></i>
+
+                        <p class="font-medium leading-relaxed">
+                            <%= error %>
+                        </p>
+                    </div>
+                    <% } %>
+                        <form action="/register" method="POST" class="space-y-5">
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label
+                                        class="block text-sm font-semibold mb-2 text-gray-700 dark:text-slate-300">Name</label>
+                                    <input type="text" name="name" required
+                                        class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800/80 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-900 dark:text-white transition-colors duration-300">
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-semibold mb-2 text-gray-700 dark:text-slate-300">Phone</label>
+                                    <input type="text" name="phone" required
+                                        class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800/80 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-900 dark:text-white transition-colors duration-300">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label
+                                    class="block text-sm font-semibold mb-2 text-gray-700 dark:text-slate-300">Email</label>
+                                <input type="email" name="email" required
+                                    class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800/80 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-900 dark:text-white transition-colors duration-300">
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div>
+                                    <label
+                                        class="block text-sm font-semibold mb-2 text-gray-700 dark:text-slate-300">Password</label>
+                                    <div class="relative">
+                                        <input type="password" name="password" id="password" required
+                                            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800/80 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-900 dark:text-white transition-colors duration-300 pr-12">
+                                        <button type="button"
+                                            onclick="togglePassword('password', 'eye-icon-1', 'eye-off-icon-1')"
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-orange-500 focus:outline-none">
+                                            <i data-lucide="eye" id="eye-icon-1" class="w-5 h-5"></i>
+                                            <i data-lucide="eye-off" id="eye-off-icon-1" class="w-5 h-5 hidden"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-semibold mb-2 text-gray-700 dark:text-slate-300">Confirm
+                                        Password</label>
+                                    <div class="relative">
+                                        <input type="password" name="confirmPassword" id="confirmPassword" required
+                                            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800/80 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-gray-900 dark:text-white transition-colors duration-300 pr-12">
+                                        <button type="button"
+                                            onclick="togglePassword('confirmPassword', 'eye-icon-2', 'eye-off-icon-2')"
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-orange-500 focus:outline-none">
+                                            <i data-lucide="eye" id="eye-icon-2" class="w-5 h-5"></i>
+                                            <i data-lucide="eye-off" id="eye-off-icon-2" class="w-5 h-5 hidden"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 flex flex-col gap-3">
+                                <button
+                                    class="w-full px-4 py-3.5 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold rounded-full shadow-lg transition-all duration-200 uppercase tracking-widest text-sm"
+                                    type="submit">
+                                    Create Account
+                                </button>
+                                <a href="/"
+                                    class="w-full px-4 py-3 bg-transparent border-2 border-gray-300 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-transparent dark:hover:border-slate-400 hover:text-gray-900 dark:hover:text-white font-bold rounded-full text-center transition-all duration-200 uppercase tracking-wider text-sm">
+                                    กลับหน้าแรก
+                                </a>
+                            </div>
+
+                            <p class="mt-4 text-center text-sm text-gray-500 dark:text-slate-400">
+                                Already have an account?
+                                <a href="/login"
+                                    class="font-bold text-orange-500 hover:text-orange-600 dark:hover:text-orange-400 hover:underline">Sign
+                                    In</a>
+                            </p>
+
+                        </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+
+        lucide.createIcons();
+
+
+        function togglePassword(inputId, eyeIconId, eyeOffIconId) {
+            const input = document.getElementById(inputId);
+            const eyeIcon = document.getElementById(eyeIconId);
+            const eyeOffIcon = document.getElementById(eyeOffIconId);
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeIcon.classList.add('hidden');
+                eyeOffIcon.classList.remove('hidden');
+            } else {
+                input.type = 'password';
+                eyeIcon.classList.remove('hidden');
+                eyeOffIcon.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+
+</html>
