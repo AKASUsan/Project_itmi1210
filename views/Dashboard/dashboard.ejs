@@ -1,154 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <%- include('../head') %>
-        <script src="https://unpkg.com/lucide@latest"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
 
-<body class="bg-[#050505] text-white font-sans">
+  <body class="bg-[#050505] text-white font-sans">
     <div class="flex h-screen p-4 gap-4 overflow-hidden">
-        <%- include('navbardashboard') %>
-     <main class="flex-1 overflow-y-auto space-y-6 p-4">
-        <header class="flex justify-between items-center pb-6 border-b border-white/5">
-                    <div>
-                        <h1 class="text-2xl font-black uppercase tracking-tight text-white">Main Dashboard</h1>
-                        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-[2px]">Overview & Analytics</p>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <button onclick="toggleTheme()"
-                            class="p-2 text-white hover:bg-white/20 rounded-full transition duration-300">
-                            <i data-lucide="sun" class="w-5 h-5 dark:hidden"></i>
-                            <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
-                        </button>
-                        <div class="relative" x-data="{ open: false }">
-                            <button @click.stop="open = !open"
-                                class="flex items-center gap-3 p-1 pr-3 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10">
-                                <img src="/images/profile/<%= employee.image %>"
-                                    class="w-8 h-8 rounded-full object-cover border-2 border-orange-500">
-                                <span class="text-white text-sm font-medium hidden sm:block">
-                                    <%= employee.name %>
-                                </span>
-                                <i class="fas fa-chevron-down text-white text-[10px] transition-transform"
-                                    :class="open ? 'rotate-180' : ''"></i>
-                            </button>
+      <%- include('navbardashboard') %>
+      <main class="flex-1 overflow-y-auto space-y-6 p-4">
+        <header
+          class="flex justify-between items-center pb-6 border-b border-white/5"
+        >
+          <div>
+            <h1 class="text-2xl font-black uppercase tracking-tight text-white">
+              Main Dashboard
+            </h1>
+            <p
+              class="text-[10px] text-gray-500 font-bold uppercase tracking-[2px]"
+            >
+              Overview & Analytics
+            </p>
+          </div>
+          <div class="flex items-center gap-4">
+            <button
+              onclick="toggleTheme()"
+              class="p-2 text-white hover:bg-white/20 rounded-full transition duration-300"
+            >
+              <i data-lucide="sun" class="w-5 h-5 dark:hidden"></i>
+              <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+            </button>
+            <div class="relative" x-data="{ open: false }">
+              <button
+                @click.stop="open = !open"
+                class="flex items-center gap-3 p-1 pr-3 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
+              >
+                <img
+                  src="/images/profile/<%= employee.image %>"
+                  class="w-8 h-8 rounded-full object-cover border-2 border-orange-500"
+                />
+                <span class="text-white text-sm font-medium hidden sm:block">
+                  <%= employee.name %>
+                </span>
+                <i
+                  class="fas fa-chevron-down text-white text-[10px] transition-transform"
+                  :class="open ? 'rotate-180' : ''"
+                ></i>
+              </button>
 
-                            <div x-show="open" @click.away="open = false"
-                                x-transition:enter="transition ease-out duration-100"
-                                x-transition:enter-start="transform opacity-0 scale-95"
-                                x-transition:enter-end="transform opacity-100 scale-100"
-                                x-transition:leave="transition ease-in duration-75"
-                                x-transition:leave-start="transform opacity-100 scale-100"
-                                x-transition:leave-end="transform opacity-0 scale-95"
-                                class="absolute right-0 mt-3 w-56 origin-top-right rounded-2xl bg-white dark:bg-neutral-900 shadow-2xl ring-1 ring-black ring-opacity-5 z-[110] overflow-hidden"
-                                style="display: none;">
-
-                                <div class="px-4 py-3 bg-orange-500/10 border-b border-gray-100 dark:border-white/5">
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">Signed in as</p>
-                                    <p class="text-sm font-bold text-orange-600 dark:text-orange-400 truncate">
-                                        <%= employee.name %>
-                                    </p>
-                                </div>
-                                <div class="py-1">
-                                    <a href="/profile"
-                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-white/5 transition">
-                                        <i class="fas fa-user-circle text-orange-500 w-5 text-center"></i> My Profile
-                                    </a>
-                                    <a href="/orders"
-                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-white/5 transition">
-                                        <i class="fas fa-shopping-bag text-orange-500 w-5 text-center"></i> My
-                                        Orders
-                                    </a>
-                                    <a href="/settings"
-                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-white/5 transition">
-                                        <i class="fas fa-cog text-orange-500 w-5 text-center"></i> Settings
-                                    </a>
-                                    <a href="/logout"
-                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition font-bold">
-                                        <i class="fas fa-sign-out-alt w-5"></i> Sign Out
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bg-[#1a1a1a] p-6 rounded-3xl border border-gray-800 shadow-sm">
-                        <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Total Revenue</p>
-                        <h2 class="text-3xl font-black mt-2">฿<%= data.stats.revenue.toLocaleString() %>
-                        </h2>
-                    </div>
-                    <div class="bg-[#1a1a1a] p-6 rounded-3xl border border-gray-800 shadow-sm">
-                        <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Daily Orders</p>
-                        <h2 class="text-3xl font-black mt-2 text-white">
-                            <%= data.stats.orders %>
-                        </h2>
-                    </div>
-                    <div class="bg-[#1a1a1a] p-6 rounded-3xl border border-gray-800 shadow-sm">
-                        <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Pending</p>
-                        <h2 class="text-3xl font-black mt-2 text-red-500">
-                            <%= data.stats.pending %>
-                        </h2>
-                    </div>
-                    <div class="bg-[#1a1a1a] p-6 rounded-3xl border border-gray-800 shadow-sm">
-                        <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Total Members</p>
-                        <h2 class="text-3xl font-black mt-2 text-blue-400">
-                            <%= data.stats.members %>
-                        </h2>
-                    </div>
+              <div
+                x-show="open"
+                @click.away="open = false"
+                x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="transform opacity-0 scale-95"
+                x-transition:enter-end="transform opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-75"
+                x-transition:leave-start="transform opacity-100 scale-100"
+                x-transition:leave-end="transform opacity-0 scale-95"
+                class="absolute right-0 mt-3 w-56 origin-top-right rounded-2xl bg-white dark:bg-neutral-900 shadow-2xl ring-1 ring-black ring-opacity-5 z-[110] overflow-hidden"
+                style="display: none"
+              >
+                <div
+                  class="px-4 py-3 bg-emerald-500/10 border-b border-gray-100 dark:border-white/5"
+                >
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Role Sign
+                  </p>
+                  <p
+                    class="text-sm font-bold text-orange-600 dark:text-orange-400 truncate"
+                  >
+                    <%= employee.role %>
+                  </p>
                 </div>
-
-                <div class="bg-[#1a1a1a] rounded-3xl border border-gray-800 shadow-xl overflow-hidden">
-                    <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-white/5">
-                        <h3 class="font-bold text-lg">Recent Orders</h3>
-                        <button
-                            class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-xl text-[10px] font-bold uppercase tracking-widest transition">View
-                            All</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="text-[10px] text-gray-500 uppercase bg-black/20 tracking-widest">
-                                <tr>
-                                    <th class="px-8 py-5">Order ID</th>
-                                    <th class="px-8 py-5">Customer</th>
-                                    <th class="px-8 py-5">Status</th>
-                                    <th class="px-8 py-5 text-right">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-800 text-sm">
-                                <% data.recentOrders.forEach(order=> { %>
-                                    <tr class="hover:bg-white/[0.02] transition">
-                                        <td class="px-8 py-5 font-mono text-red-400">#<%=
-                                                order._id.toString().slice(-6).toUpperCase() %>
-                                        </td>
-                                        <td class="px-8 py-5 font-medium">
-                                            <%= order.memberId ? order.memberId.name : 'Guest' %>
-                                        </td>
-                                        <td class="px-8 py-5">
-                                            <span
-                                                class="px-3 py-1 rounded-full text-[9px] font-black uppercase <%= order.status === 'preparing' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 'bg-green-500/10 text-green-500 border border-green-500/20' %>">
-                                                <%= order.status %>
-                                            </span>
-                                        </td>
-                                        <td class="px-8 py-5 font-bold text-right text-white">฿<%=
-                                                order.totalAmount.toLocaleString() %>
-                                        </td>
-                                    </tr>
-                                    <% }) %>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="py-1">
+                  <a
+                    href="/"
+                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-white/5 transition"
+                  >
+                    <i class="fas fa-home text-orange-500 w-5 text-center"></i>
+                    Home
+                  </a>
+                  <a
+                    href="/profile"
+                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-white/5 transition"
+                  >
+                    <i
+                      class="fas fa-user-circle text-orange-500 w-5 text-center"
+                    ></i>
+                    My Profile
+                  </a>
+                  <a
+                    href="/settings"
+                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-white/5 transition"
+                  >
+                    <i class="fas fa-cog text-orange-500 w-5 text-center"></i>
+                    Settings
+                  </a>
+                  <a
+                    href="/logout"
+                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition font-bold"
+                  >
+                    <i class="fas fa-sign-out-alt w-5"></i> Sign Out
+                  </a>
                 </div>
-            </main>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div class="bg-[#1a1a1a] p-5 rounded-2xl border border-gray-800">
+            <div class="flex justify-between">
+              <div>
+                <p class="text-[10px] text-gray-500 uppercase font-bold">
+                  Total Menus
+                </p>
+                <h2 class="text-xl font-black mt-1">
+                  <%= data.stats.menus %> Items
+                </h2>
+              </div>
+              <i class="fa-solid fa-utensils text-gray-700"></i>
+            </div>
+          </div>
+          <div class="bg-[#1a1a1a] p-5 rounded-2xl border border-gray-800">
+            <div class="flex justify-between">
+              <div>
+                <p
+                  class="text-[10px] text-gray-500 uppercase font-bold text-green-500"
+                >
+                  Completed Today
+                </p>
+                <h2 class="text-xl font-black mt-1">
+                  <%= data.stats.completed %> Orders
+                </h2>
+              </div>
+              <i class="fa-solid fa-check text-green-900/30"></i>
+            </div>
+          </div>
+          <div class="bg-[#1a1a1a] p-5 rounded-2xl border border-gray-800">
+            <div class="flex justify-between">
+              <div>
+                <p
+                  class="text-[10px] text-gray-500 uppercase font-bold text-orange-500"
+                >
+                  Income Today
+                </p>
+                <h2 class="text-xl font-black mt-1">
+                  ฿<%= data.stats.revenue.toLocaleString() %>
+                </h2>
+              </div>
+              <i class="fa-solid fa-wallet text-orange-900/30"></i>
+            </div>
+          </div>
+          <div class="bg-[#1a1a1a] p-5 rounded-2xl border border-gray-800">
+            <div class="flex justify-between">
+              <div>
+                <p
+                  class="text-[10px] text-gray-500 uppercase font-bold text-blue-400"
+                >
+                  Staff
+                </p>
+                <h2 class="text-xl font-black mt-1">
+                  <%= data.stats.staff %> Persons
+                </h2>
+              </div>
+              <i class="fa-solid fa-users text-blue-900/30"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-[#1a1a1a] p-6 rounded-3xl border border-gray-800 mb-6">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xs font-bold uppercase text-gray-400"><i class="fa-solid fa-chart-line mr-2"></i>Revenue Analytics</h3>
+        <div class="flex bg-black/40 p-1 rounded-xl border border-gray-800">
+            <button onclick="updateMainChart('daily')" class="text-[10px] px-3 py-1 rounded-lg hover:bg-white/5 transition">7 Days</button>
+            <button onclick="updateMainChart('monthly')" class="text-[10px] px-3 py-1 rounded-lg hover:bg-white/5 transition">30 Days</button>
+            <button onclick="updateMainChart('sixMonth')" class="text-[10px] px-3 py-1 rounded-lg hover:bg-white/5 transition">6 Months</button>
+        </div>
+    </div>
+    <div style="height: 300px; position: relative;">
+        <canvas id="revenueChart" 
+            data-daily='<%- JSON.stringify(data.charts.daily) %>'
+            data-monthly='<%- JSON.stringify(data.charts.monthly) %>'
+            data-sixmonth='<%- JSON.stringify(data.charts.sixMonth) %>'></canvas>
+    </div>
+</div>
+
+<div class="bg-[#1a1a1a] p-6 rounded-3xl border border-gray-800">
+    <h3 class="text-xs font-bold mb-6 uppercase text-gray-400"><i class="fa-solid fa-clock-rotate-left mr-2"></i>Recent Orders</h3>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead>
+                <tr class="text-gray-500 border-b border-gray-800">
+                    <th class="pb-3">Order ID</th>
+                    <th class="pb-3">Customer</th>
+                    <th class="pb-3">Status</th>
+                    <th class="pb-3">Amount</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-300">
+                <% data.recentOrders.forEach(order => { %>
+                <tr class="border-b border-gray-800/50 hover:bg-white/5 transition">
+                    <td class="py-4 font-mono text-orange-500">#<%= order._id.toString().slice(-6).toUpperCase() %></td>
+                    <td class="py-4"><%= order.memberId ? order.memberId.name : 'Walk-in' %></td>
+                    <td class="py-4">
+                        <span class="px-2 py-1 rounded-full text-[10px] uppercase font-bold 
+                            <%= order.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500' %>">
+                            <%= order.status %>
+                        </span>
+                    </td>
+                    <td class="py-4 font-bold text-white">฿<%= order.totalAmount %></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+      </main>
     </div>
 
-    <script>
-        lucide.createIcons();
-    </script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('revenueChart');
+    const chartData = {
+        daily: JSON.parse(ctx.getAttribute('data-daily')),
+        monthly: JSON.parse(ctx.getAttribute('data-monthly')),
+        sixMonth: JSON.parse(ctx.getAttribute('data-sixmonth'))
+    };
 
+    let mainChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.daily.labels,
+            datasets: [{
+                data: chartData.daily.values,
+                borderColor: '#f97316',
+                backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+
+    function updateMainChart(type) {
+        mainChart.data.labels = chartData[type].labels;
+        mainChart.data.datasets[0].data = chartData[type].values;
+        mainChart.update();
+    }
+</script>
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script>
+      lucide.createIcons();
+    </script>
+    
+  </body>
 </html>
