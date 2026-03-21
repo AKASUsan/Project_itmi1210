@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <%- include('../head.ejs') %>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen">
+    
+    <div class="max-w-6xl mx-auto pt-12 px-4 pb-10">
+        
+        <div class="mb-6">
+            <a href="/" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-orange-600 dark:text-zinc-400 dark:hover:text-orange-400 transition-colors">
+                <i data-lucide="chevron-left"></i> 
+                Back to Home
+            </a>
+        </div>
+
+        <form action="/updateprofile" method="POST" enctype="multipart/form-data"
+              x-data="{ 
+                  originalName: '<%= user.name %>', 
+                  originalPhone: '<%= user.phone %>',
+                  originalAddress: '<%= user.address %>',
+                  name: '<%= user.name %>', 
+                  phone: '<%= user.phone %>',
+                  address: '<%= user.address %>',
+                  imageChanged: false,
+                 
+                  get hasChanged() { 
+                      return this.name !== this.originalName || 
+                             this.phone !== this.originalPhone || 
+                             this.address !== this.originalAddress ||
+                             this.imageChanged; 
+                  },
+                  cancelChanges() {
+                      this.name = this.originalName;
+                      this.phone = this.originalPhone;
+                      this.address = this.originalAddress;
+                      this.imageChanged = false;
+                      $refs.fileInput.value = ''; 
+                  }
+              }"
+              class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-1 flex flex-col gap-6">
+                
+                <div class="bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-gray-200 dark:border-zinc-800 p-8 flex flex-col items-start">
+                    <div class="relative group mb-6">
+                        <% const imgPath = (user.role === 'admin' || user.role === 'staff') ? '/images/employeeProfile/' : '/images/profile/'; %>
+                        <img src="<%= imgPath %><%= user.image %>" 
+                             class="w-32 h-32 bg-zinc-100/10 rounded-full shadow-md object-cover">
+                        
+                        <label class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center cursor-pointer transition-opacity duration-200">
+                            <svg class="w-6 h-6 text-white mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <span class="text-xs text-white font-medium">Change</span>
+                            <input type="file" name="image" x-ref="fileInput" @change="imageChanged = true" class="hidden" accept="image/*">
+                        </label>
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white" x-text="name"></h2>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <% if(user.points !== undefined) { %>
+                    <div class="bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-gray-200 dark:border-zinc-800 p-6 flex flex-col justify-center">
+                        <p class="text-xs text-gray-500 dark:text-zinc-400 font-bold uppercase mb-1">Points</p>
+                        <p class="text-2xl font-black text-orange-600 dark:text-orange-400"><%= user.points %> pt</p>
+                    </div>
+                    <% } %>
+                    
+                    <div class="bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-gray-200 dark:border-zinc-800 p-6 flex flex-col justify-center">
+                        <p class="text-xs text-gray-500 dark:text-zinc-400 font-bold uppercase mb-1">Joined</p>
+                        <p class="text-sm font-semibold text-gray-800 dark:text-gray-200"><%= new Date(user.createdAt).toLocaleDateString('en-GB') %></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white dark:bg-zinc-900 rounded-3xl shadow-sm border border-gray-200 dark:border-zinc-800 p-8 flex flex-col h-full">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-6">Personal Information</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
+                    <div class="flex flex-col md:col-span-2">
+                        <label class="text-xs text-gray-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-2">Full Name</label>
+                        <input type="text" name="name" x-model="name" 
+                               class="w-full bg-gray-100 dark:bg-zinc-800/50 border border-transparent hover:border-blue-300 focus:bg-white dark:focus:bg-zinc-900 focus:border-indigo-500 rounded-xl px-4 py-3 text-base outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-xs text-gray-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-2">Email (Read Only)</label>
+                        <div class="bg-gray-100 dark:bg-zinc-900/50 p-3 rounded-xl border border-gray-200 dark:border-zinc-800 text-gray-500 cursor-not-allowed">
+                            <span class="text-base"><%= user.email %></span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-xs text-gray-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-2">Phone Number</label>
+                        <input type="text" name="phone" x-model="phone" 
+                               class="w-full bg-gray-50 dark:bg-zinc-800/50 border border-transparent hover:border-blue-300 focus:bg-white dark:focus:bg-zinc-900 focus:border-indigo-500 rounded-xl px-4 py-3 text-base outline-none focus:ring-2 focus:ring-indigo-500/20 transition">
+                    </div>
+                    
+                    <div class="flex flex-col md:col-span-2">
+                        <label class="text-xs text-gray-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-2">Address</label>
+                        <textarea name="address" x-model="address" rows="3"
+                                  class="w-full bg-gray-50 dark:bg-zinc-800/50 border border-transparent hover:border-blue-300 focus:bg-white dark:focus:bg-zinc-900 focus:border-indigo-500 rounded-xl px-4 py-3 text-base outline-none focus:ring-2 focus:ring-indigo-500/20 transition resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div x-show="hasChanged" x-cloak style="display: none;" 
+                     class="mt-8 flex gap-3 justify-end pt-6 border-t border-gray-100 dark:border-zinc-800">
+                    <button type="button" @click="cancelChanges()" 
+                            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-md shadow-indigo-600/20 transition">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
