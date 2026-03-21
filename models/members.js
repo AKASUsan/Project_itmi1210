@@ -7,7 +7,8 @@ const MemberSchema = new mongoose.Schema({
     phone: {type: String, required:true},
     password:{type: String, required:true},
     role: { type: String, default: 'member' },
-    points: { type: Number, default: 0 }
+    address:{type: String },
+    points: { type: Number, default: 0 },
 
 },{
    timestamps: true 
