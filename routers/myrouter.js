@@ -8,8 +8,8 @@ const Member = require("../models/members");
 const Order = require("../models/order");
 
 router.get("/", async (req, res) => {
-  const title = "Home";
   try {
+    const title = "Home";
     const products = await Product.find();
     res.render("index", {
       title: title,
@@ -20,72 +20,108 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/dashboard", async (req, res) => {
-    const title = "Dashboard";
-
-    try {
-        const employee = await Employee.findOne();
-
-      
-        const allOrders = await Order.find()
-            .select("totalAmount createdAt status memberId")
-            .populate('memberId', 'name')
-            .sort({ createdAt: -1 });
-
-       
-        let totalRevenue = 0;
-        let pendingCount = 0;
-
-        allOrders.forEach(order => {
-            totalRevenue += order.totalAmount;
-            if (order.status === "preparing") pendingCount++;
-        });
-
-        const totalMembers = await Member.countDocuments();
-
-        const avgBill = allOrders.length
-            ? Math.round(totalRevenue / allOrders.length)
-            : 0;
-
-        const last7Days = [...Array(7)].map((_, i) => {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            return d.toISOString().split('T')[0];
-        }).reverse();
-
-        const revenueMap = {};
-
-        allOrders.forEach(order => {
-            const date = order.createdAt.toISOString().split('T')[0];
-            revenueMap[date] = (revenueMap[date] || 0) + order.totalAmount;
-        });
-
-        const revenueData = last7Days.map(date => revenueMap[date] || 0);
-
-        const dashboardData = {
-            stats: {
-                revenue: totalRevenue,
-                orders: allOrders.length,
-                members: totalMembers,
-                pending: pendingCount,
-                avgBill: avgBill
-            },
-            charts: {
-                labels: last7Days,
-                data: revenueData
-            },
-            recentOrders: allOrders.slice(0, 8)
-        };
-
-        res.render("Dashboard/dashboard", {
-            employee,
-            data: dashboardData,
-            title
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Error");
+ router.get("/menu", async (req,res) =>{
+    try{
+        const title = "Menu";
+        const products = await Product.find();
+        res.render("menu",{
+            title:title,
+            products:products
+        })
+    }catch(err) {
+        res.status(500).json({message:"ServerError", error:err.message});
     }
+ })
+
+
+router.get("/dashboard", async (req, res) => {
+  try {
+    const title = "Dashboard";
+    const now = new Date();
+    const startOfToday = new Date(now.setHours(0, 0, 0, 0));
+
+    const [employee, productCount, staffCount, allOrders] = await Promise.all([
+      Employee.findOne(),
+      Product.countDocuments(), // ใช้ Product Model ตามที่คุณส่งมา
+      Employee.countDocuments(),
+      Order.find().populate("memberId").sort({ createdAt: -1 }),
+    ]);
+
+    const todayOrders = allOrders.filter((o) => o.createdAt >= startOfToday);
+    const revenueToday = todayOrders.reduce((sum, o) => sum + o.totalAmount, 0);
+    const completedToday = todayOrders.filter(
+      (o) => o.status === "completed",
+    ).length;
+
+    const hourStats = new Array(24).fill(0);
+    const productAnalysis = {};
+
+    allOrders.forEach((order) => {
+      const hour = new Date(order.createdAt).getHours();
+      hourStats[hour]++;
+
+      order.items?.forEach((item) => {
+        const name = item.name; // หรือ item.productId.name ถ้า populate มา
+        if (!productAnalysis[name])
+          productAnalysis[name] = { count: 0, pairings: {} };
+        productAnalysis[name].count += item.quantity || 1;
+
+        order.items.forEach((p) => {
+          if (p.name !== name) {
+            productAnalysis[name].pairings[p.name] =
+              (productAnalysis[name].pairings[p.name] || 0) + 1;
+          }
+        });
+      });
+    });
+
+    const topProducts = Object.entries(productAnalysis)
+      .map(([name, val]) => ({
+        name,
+        count: val.count,
+        suggested:
+          Object.entries(val.pairings).sort((a, b) => b[1] - a[1])[0]?.[0] ||
+          "No extra",
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8);
+
+    const formatChart = (items, type) => {
+      const dataMap = {};
+      items.forEach((o) => {
+        let key;
+        const d = new Date(o.createdAt);
+        if (type === "day") key = d.toISOString().split("T")[0];
+        else if (type === "month")
+          key = `${d.getFullYear()}-${d.getMonth() + 1}`;
+        dataMap[key] = (dataMap[key] || 0) + o.totalAmount;
+      });
+      const sortedKeys = Object.keys(dataMap).sort();
+      return { labels: sortedKeys, values: sortedKeys.map((k) => dataMap[k]) };
+    };
+
+    res.render("Dashboard/dashboard", {
+      employee,
+      title,
+      data: {
+        stats: {
+          menus: productCount,
+          staff: staffCount,
+          completed: completedToday,
+          revenue: revenueToday,
+          pending: allOrders.filter((o) => o.status === "preparing").length,
+        },
+        charts: {
+          daily: formatChart(allOrders.slice(0, 100), "day"),
+          monthly: formatChart(allOrders, "month"),
+          peakHours: hourStats,
+        },
+        topProducts,
+        recentOrders: allOrders.slice(0, 5),
+      },
+    });
+  } catch (error) {
+    res.status(500).send("Error");
+  }
 });
 module.exports = router;
