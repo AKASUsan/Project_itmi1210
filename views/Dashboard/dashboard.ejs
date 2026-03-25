@@ -36,12 +36,13 @@
               <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
             </button>
             <div class="relative" x-data="{ open: false }">
+               <% const imgPath = (user.role === 'admin' || user.role === 'staff') ? '/images/employeeProfile/' : '/images/profile/'; %>
               <button
                 @click.stop="open = !open"
                 class="flex items-center gap-3 p-1 pr-3 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
               >
                 <img
-                  src="/images/profile/<%= employee.image %>"
+                  src="<%= imgPath %><%= user.image %>"
                   class="w-8 h-8 rounded-full object-cover border-2 border-orange-500"
                 />
                 <span class="text-white text-sm font-medium hidden sm:block">

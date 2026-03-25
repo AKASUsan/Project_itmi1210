@@ -6,6 +6,38 @@ const Employee = require("../models/employees");
 const Product = require("../models/products");
 const Member = require("../models/members");
 const Order = require("../models/order");
+const Cart = require('../models/cart');
+
+const authemployee = (req, res, next) => {
+    if (req.session && req.session.user && (req.session.user.role === 'admin')) {
+        return next();
+    }
+    res.redirect("/");
+};
+const auth = (req,res, next) =>{
+  if (req.session && req.session.user) {
+        return next();
+    }
+    res.redirect("/signin");
+}
+router.use(async (req, res, next) => {
+    try {
+        let count = 0;
+        if (req.session.user) {
+            const Cart = require('../models/cart'); 
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            
+            if (cart && cart.items.length > 0) {
+                count = cart.items.reduce((acc, item) => acc + item.quantity, 0);
+            }
+        }
+        res.locals.cartCount = count;
+        next();
+    } catch (error) {
+        res.locals.cartCount = 0;
+        next();
+    }
+});
 
 router.get("/", async (req, res) => {
   try {
@@ -33,25 +65,106 @@ router.get("/", async (req, res) => {
     }
  })
 
+router.get("/checkout", auth, async (req, res) => {
+    try {
+        const cart = await Cart.findOne({ user: req.session.user._id }).populate('items.product');
+        
+        let cartItems = [];
+        let subtotal = 0;
 
-router.get("/dashboard", async (req, res) => {
+        if (cart && cart.items) {
+            cartItems = cart.items.map(item => {
+                const product = item.product;
+                const qty = item.quantity;
+                subtotal += (product.price * qty);
+                
+                return {
+                    _id: product._id,
+                    name: product.name,
+                    image: product.image,
+                    price: product.price,
+                    quantity: qty
+                };
+            });
+        }
+
+        res.render("auth/checkout", {
+            title: "Checkout",
+            cartItems: cartItems,
+            subtotal: subtotal,
+            total: subtotal,
+            user: req.session.user || {}
+        });
+    } catch (error) {
+        res.redirect("/cart");
+    }
+});
+
+router.post("/checkout/process", auth, async (req, res) => {
+    try {
+        const { name, phone, address, paymentMethod } = req.body;
+        
+        const cart = await Cart.findOne({ user: req.session.user._id }).populate('items.product');
+
+        if (!cart || cart.items.length === 0) {
+            return res.redirect("/cart");
+        }
+
+        let subtotal = 0;
+        const orderItems = cart.items.map(item => {
+            const product = item.product;
+            const qty = item.quantity;
+            subtotal += (product.price * qty);
+            
+            return {
+                menuName: product.name,
+                quantity: qty,
+                price: product.price
+            };
+        });
+
+        const newOrder = new Order({
+            memberId: req.session.user._id,
+            items: orderItems,
+            totalAmount: subtotal,
+            customerName: name,
+            phoneNumber: phone,
+            shippingAddress: address,
+            paymentMethod: paymentMethod,
+            status: "preparing"
+        });
+
+        await newOrder.save();
+
+        cart.items = [];
+        await cart.save();
+
+        res.redirect("/order-success/" + newOrder._id);
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Order Processing Failed");
+    }
+});
+
+router.get("/dashboard", authemployee , async (req, res) => {
   try {
     const title = "Dashboard";
     const now = new Date();
     const startOfToday = new Date(now.setHours(0, 0, 0, 0));
 
     const [employee, productCount, staffCount, allOrders] = await Promise.all([
-      Employee.findOne(),
-      Product.countDocuments(), // ใช้ Product Model ตามที่คุณส่งมา
+      Employee.findById(req.session.user._id),
+      Product.countDocuments(),
       Employee.countDocuments(),
       Order.find().populate("memberId").sort({ createdAt: -1 }),
     ]);
 
+    if (!employee) return res.redirect("/login");
+
     const todayOrders = allOrders.filter((o) => o.createdAt >= startOfToday);
     const revenueToday = todayOrders.reduce((sum, o) => sum + o.totalAmount, 0);
-    const completedToday = todayOrders.filter(
-      (o) => o.status === "completed",
-    ).length;
+    const completedToday = todayOrders.filter((o) => o.status === "completed").length;
 
     const hourStats = new Array(24).fill(0);
     const productAnalysis = {};
@@ -59,17 +172,13 @@ router.get("/dashboard", async (req, res) => {
     allOrders.forEach((order) => {
       const hour = new Date(order.createdAt).getHours();
       hourStats[hour]++;
-
       order.items?.forEach((item) => {
-        const name = item.name; // หรือ item.productId.name ถ้า populate มา
-        if (!productAnalysis[name])
-          productAnalysis[name] = { count: 0, pairings: {} };
+        const name = item.name;
+        if (!productAnalysis[name]) productAnalysis[name] = { count: 0, pairings: {} };
         productAnalysis[name].count += item.quantity || 1;
-
         order.items.forEach((p) => {
           if (p.name !== name) {
-            productAnalysis[name].pairings[p.name] =
-              (productAnalysis[name].pairings[p.name] || 0) + 1;
+            productAnalysis[name].pairings[p.name] = (productAnalysis[name].pairings[p.name] || 0) + 1;
           }
         });
       });
@@ -79,9 +188,7 @@ router.get("/dashboard", async (req, res) => {
       .map(([name, val]) => ({
         name,
         count: val.count,
-        suggested:
-          Object.entries(val.pairings).sort((a, b) => b[1] - a[1])[0]?.[0] ||
-          "No extra",
+        suggested: Object.entries(val.pairings).sort((a, b) => b[1] - a[1])[0]?.[0] || "No extra",
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 8);
@@ -92,8 +199,7 @@ router.get("/dashboard", async (req, res) => {
         let key;
         const d = new Date(o.createdAt);
         if (type === "day") key = d.toISOString().split("T")[0];
-        else if (type === "month")
-          key = `${d.getFullYear()}-${d.getMonth() + 1}`;
+        else if (type === "month") key = `${d.getFullYear()}-${d.getMonth() + 1}`;
         dataMap[key] = (dataMap[key] || 0) + o.totalAmount;
       });
       const sortedKeys = Object.keys(dataMap).sort();
@@ -103,6 +209,7 @@ router.get("/dashboard", async (req, res) => {
     res.render("Dashboard/dashboard", {
       employee,
       title,
+      user: req.session.user,
       data: {
         stats: {
           menus: productCount,
@@ -124,4 +231,23 @@ router.get("/dashboard", async (req, res) => {
     res.status(500).send("Error");
   }
 });
+
+router.get("/order-success/:id", auth, async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        
+        if (!order) {
+            return res.redirect("/");
+        }
+
+        res.render("auth/order-success", {
+            title: "Order Success",
+            order: order,
+            user: req.session.user || {}
+        });
+    } catch (error) {
+        res.redirect("/");
+    }
+});
+
 module.exports = router;
