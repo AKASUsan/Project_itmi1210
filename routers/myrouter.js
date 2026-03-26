@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const multer = require('multer');
 
 const connectDB = require("../config/db");
+const Reservations = require("../models/reservation")
+const Promotion = require("../models/promotion");
 const Employee = require("../models/employees");
 const Product = require("../models/products");
 const Member = require("../models/members");
@@ -14,12 +17,37 @@ const authemployee = (req, res, next) => {
     }
     res.redirect("/");
 };
+
 const auth = (req,res, next) =>{
   if (req.session && req.session.user) {
         return next();
     }
     res.redirect("/signin");
 }
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './public/images/product')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + ".png")
+    }
+});
+
+const promotionStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './public/images/promotions')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + "jpg")
+    }
+});
+
+const upload = multer({
+  storage: storage,
+});
+const uploadPromotion = multer({ storage: promotionStorage });
+
 router.use(async (req, res, next) => {
     try {
         let count = 0;
@@ -64,6 +92,173 @@ router.get("/", async (req, res) => {
         res.status(500).json({message:"ServerError", error:err.message});
     }
  })
+
+router.get('/members', async (req,res) =>{
+  try{
+    const title = "Member List"
+    const members = await Member.find();
+    res.render('Dashboard/member/members',{title,members})
+  }catch(err){
+    res.status(500).json({message:"Server Error", error:err.message})
+  }
+})
+
+router.get('/reservations', async (req,res) =>{
+  try{
+    const title = "Reservations"
+    const reservations = Reservations.find();
+    res.render('Dashboard/reservation/reservations', {title,reservations})
+  }catch(err){
+    res.status(500).json({message:"Server Error", error:err.message})
+  }
+})
+
+router.get('/promotions', async (req,res) =>{
+  try{
+    try {
+        const title = "Promotion Management";
+        const promotions = await Promotion.find().sort({ createdAt: -1 });
+        res.render('Dashboard/promotion/promotion', { title, promotions });
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+  }catch(err){
+  res.status(500).json({message:"Server Error", error:err.message})
+  }
+})
+
+router.get('/promotions/add',async (req,res) =>{
+  try{
+    const title = "Add Promotion"
+    res.render('Dashboard/promotion/promotionsform', { title });
+  }catch(err){
+  res.status(500).json({message:"Server Error", error:err.message})
+  }
+})
+
+router.post('/promotions/add', uploadPromotion.single('imageFilename'), async (req, res) => {
+    try {
+        const newPromotion = new Promotion({
+            title: req.body.title,
+            description: req.body.description,
+            imageFilename: req.file.filename,
+            isActive: req.body.isActive === 'on',
+            startDate: req.body.startDate,
+            endDate: req.body.endDate
+        });
+        
+        await newPromotion.save();
+        res.redirect('/promotions');
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
+router.post('/promotions/delete/:id', async (req, res) => {
+    try {
+        await Promotion.findByIdAndDelete(req.params.id);
+        res.redirect('/promotions');
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
+router.get('/menus', async (req, res) => {
+    try {
+        const title = "Menu Management"
+        const menus = await Product.find();
+        res.render('Dashboard/menu/menu', { menus,title});
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
+router.get('/menus/add', (req,res) =>{
+  try{
+    const title = "Menu Form";
+    res.render("Dashboard/menu/menuform",{title})
+  }catch(err){
+    res.status(500).json({message:"Server Error", error: err.message})
+  }
+});
+
+router.get('/menus/edit/:id', async (req, res) => {
+    try {
+        const title = "Menu Edit"
+        const menu = await Product.findById(req.params.id);
+        res.render('Dashboard/menu/menuedit', { menu,title });
+    } catch (err) { res.status(500).send(err.message); }
+});
+
+router.post('/menus/add',upload.single('image') ,async (req, res) => {
+    try {
+        req.body.isAvailable = req.body.isAvailable === 'on';
+        if (req.file) {
+            req.body.image = req.file.filename;
+        } else {
+            req.body.image = 'default-menu.png';
+        }
+        await new Product(req.body).save();
+        res.redirect('/menus');
+    } catch (err) { res.status(500).send(err.message); }
+});
+
+router.post('/menus/edit/:id', upload.single('image'),async (req, res) => {
+    try {
+        req.body.isAvailable = req.body.isAvailable === 'on';
+        if (req.file) {
+            req.body.image = req.file.filename;
+        }
+        await Product.findByIdAndUpdate(req.params.id, req.body);
+        res.redirect('/menus');
+    } catch (err) { res.status(500).send(err.message); }
+});
+
+router.post('/menu/delete/:id', async (req, res) => {
+    try {
+        await Product.findByIdAndDelete(req.params.id);
+        res.redirect('/menus');
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
+router.get('/orders', async (req, res) => {
+    try {
+        const title = "Order Use"
+        const orders = await Order.find().sort({ createdAt: -1 });
+        res.render('Dashboard/order/orders', { orders,title });
+    } catch (err) { res.status(500).send(err.message); }
+});
+
+router.get('/orders/view/:id', async (req, res) => {
+    try {
+        const title = "Order Views";
+        let order = await Order.findById(req.params.id).lean();
+
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
+
+        if (order.items && order.items.length > 0) {
+            for (let item of order.items) {
+                const productInfo = await Product.findOne({ name: item.menuName });
+                item.image = productInfo ? productInfo.image : null;
+            }
+        }
+    
+        res.render('Dashboard/order/orderviews', { order, title });
+    } catch (err) { 
+        res.status(500).send(err.message); 
+    }
+});
+
+router.post('/orders/delete/:id', async (req, res) => {
+    try {
+        await Order.findByIdAndDelete(req.params.id);
+        res.redirect('/orders');
+    } catch (err) { res.status(500).json({message:"Server Error", message:err.message}); }
+});
 
 router.get("/checkout", auth, async (req, res) => {
     try {
