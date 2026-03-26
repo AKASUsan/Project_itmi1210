@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../head.ejs') %>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+      tailwind.config = {
+          darkMode: 'class',
+          theme: {
+              extend: {
+                  colors: {
+                      kaizen: {
+                          bg: '#fdfbf7',
+                          red: '#E60000',
+                          orange: '#ea580c',
+                          tan: '#e8dccb',
+                          dark: '#18181b',
+                          darker: '#09090b'
+                      }
+                  }
+              }
+          }
+      }
+  </script>
+</head>
+<body class="bg-kaizen-bg dark:bg-kaizen-darker text-zinc-800 dark:text-zinc-100 transition-colors duration-300 min-h-screen font-sans">
+    
+    <div class="flex flex-col min-h-screen">
+        <main class="p-4 md:p-10 flex-grow">
+            <div class="max-w-7xl mx-auto">
+               <div class="mb-6">
+                    <a href="/dashboard" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-500 transition-colors font-medium group">
+                        <i data-lucide="arrow-left" class="w-4 h-4 transition-transform group-hover:-translate-x-1"></i>
+                        Back
+                    </a>
+                </div>
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+                    <div>
+                        <h1 class="text-4xl font-black tracking-wide text-zinc-900 dark:text-zinc-100 uppercase">
+                            Menu <span class="text-kaizen-orange">Management</span>
+                        </h1>
+                        <p class="text-zinc-500 dark:text-zinc-400 font-medium italic mt-1">"Crafting perfection in every bowl."</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <button onclick="toggleDarkMode()" class="p-3 rounded-full bg-white dark:bg-kaizen-dark shadow-sm border border-kaizen-tan dark:border-zinc-800 hover:scale-105 transition flex items-center justify-center text-kaizen-orange">
+                            <i data-lucide="moon" id="icon-moon" class="w-5 h-5"></i>
+                            <i data-lucide="sun" id="icon-sun" class="w-5 h-5 hidden"></i>
+                        </button>
+                        <a href="/menus/add" class="flex items-center gap-2 bg-[#1db954] hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-md transition-all active:scale-95 tracking-wide uppercase text-sm">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add Menu
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-kaizen-dark border border-kaizen-tan dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#f5ece0] dark:bg-zinc-900 border-b border-kaizen-tan dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs uppercase font-bold tracking-widest">
+                                    <th class="px-6 py-4 text-center w-24">Image</th>
+                                    <th class="px-6 py-4">Menu Name</th>
+                                    <th class="px-6 py-4">Category & Price</th>
+                                    <th class="px-6 py-4">Status</th>
+                                    <th class="px-6 py-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-kaizen-tan/50 dark:divide-zinc-800">
+                                <% menus.forEach(item => { %>
+                                <tr class="hover:bg-[#faf8f5] dark:hover:bg-zinc-800/50 transition-colors group">
+                                    <td class="px-6 py-5">
+                                        <div class="relative w-14 h-14 mx-auto">
+                                            <img src="/images/product/<%= item.image %>" class="w-full h-full rounded-lg object-cover border border-kaizen-tan dark:border-zinc-700 shadow-sm">
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-5">
+                                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-lg group-hover:text-kaizen-orange transition-colors tracking-wide"><%= item.name %></div>
+                                        <div class="text-sm text-zinc-500 dark:text-zinc-400 mt-1 line-clamp-1"><%= item.description %></div>
+                                    </td>
+                                    <td class="px-6 py-5">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                            <%= item.category %>
+                                        </span>
+                                        <div class="text-base font-black text-kaizen-red dark:text-kaizen-orange mt-2">฿<%= item.price.toLocaleString() %></div>
+                                    </td>
+                                    <td class="px-6 py-5">
+                                        <% if(item.isAvailable) { %>
+                                            <span class="inline-flex items-center text-emerald-600 dark:text-emerald-400 text-sm font-medium">
+                                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2"></span> Available
+                                            </span>
+                                        <% } else { %>
+                                            <span class="inline-flex items-center text-red-500 text-sm font-medium">
+                                                <span class="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></span> Sold Out
+                                            </span>
+                                        <% } %>
+                                    </td>
+                                    <td class="px-6 py-5 text-right">
+                                        <div class="inline-flex items-center space-x-3">
+                                            <a href="/menus/edit/<%= item._id %>" class="text-zinc-400 hover:text-kaizen-orange transition-colors">
+                                                <i data-lucide="pencil" class="w-5 h-5"></i>
+                                            </a>
+                                            <form id="delete-form-<%= item._id %>" action="/menu/delete/<%= item._id %>" method="POST" class="inline">
+                                                <button type="button" onclick="confirmDelete('<%= item._id %>', '<%= item.name %>')" class="text-zinc-400 hover:text-kaizen-red transition-colors">
+                                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <% if(menus.length === 0) { %>
+                    <div class="py-20 text-center flex flex-col items-center justify-center">
+                        <i data-lucide="utensils-crossed" class="w-12 h-12 text-kaizen-tan dark:text-zinc-700 mb-4"></i>
+                        <p class="text-zinc-500 dark:text-zinc-500 text-base font-medium">No menu items found. Add some delicious ramen!</p>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const iconMoon = document.getElementById('icon-moon');
+            const iconSun = document.getElementById('icon-sun');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                iconMoon.classList.remove('hidden');
+                iconSun.classList.add('hidden');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                iconMoon.classList.add('hidden');
+                iconSun.classList.remove('hidden');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('icon-moon').classList.add('hidden');
+                document.getElementById('icon-sun').classList.remove('hidden');
+            });
+        }
+
+        function confirmDelete(menuId, menuName) {
+            const isDark = document.documentElement.classList.contains('dark');
+            
+            Swal.fire({
+                title: 'Delete Menu?',
+                html: `Are you sure you want to delete <b>${menuName}</b>?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E60000',
+                cancelButtonColor: isDark ? '#3f3f46' : '#a1a1aa',
+                background: isDark ? '#18181b' : '#ffffff',
+                color: isDark ? '#f4f4f5' : '#18181b',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-xl font-bold px-6 py-2',
+                    cancelButton: 'rounded-xl font-bold px-6 py-2'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`delete-form-${menuId}`).submit();
+                }
+            })
+        }
+    </script>
+</body>
+</html>
