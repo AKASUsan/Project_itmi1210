@@ -1,4 +1,4 @@
-# My Project  Is Website Food Ramen
+# My Project  Is Website Ramen Food
 A Ramen POS system built with Express.js for the backend and EJS for the frontend. This application manages restaurant orders, ramen customizations, and transaction processing using server-side rendering.
 ## Features
  * System Employee
