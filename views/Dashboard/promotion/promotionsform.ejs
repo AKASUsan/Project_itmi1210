@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../../head.ejs') %>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { kaizen: { bg: '#fdfbf7', red: '#E60000', orange: '#ea580c', tan: '#e8dccb', dark: '#18181b', darker: '#09090b' } } } } }
+    </script>
+</head>
+<body class="bg-kaizen-bg dark:bg-kaizen-darker text-zinc-800 dark:text-zinc-100 transition-colors duration-300 min-h-screen font-sans">
+    <div class="flex flex-col min-h-screen">
+        <main class="p-4 md:p-10 flex-grow">
+            <div class="max-w-3xl mx-auto">
+                
+                <div class="mb-8 flex items-center gap-4">
+                    <a href="/promotions" class="p-2 rounded-full bg-white dark:bg-kaizen-dark shadow-sm border border-kaizen-tan dark:border-zinc-800 hover:scale-105 transition text-zinc-500">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </a>
+                    <h1 class="text-3xl font-black tracking-wide text-zinc-900 dark:text-zinc-100 uppercase">
+                        Add <span class="text-kaizen-orange">Promotion</span>
+                    </h1>
+                </div>
+
+                <div class="bg-white dark:bg-kaizen-dark border border-kaizen-tan dark:border-zinc-800 rounded-2xl shadow-sm p-6 md:p-8">
+                    <form action="/promotions/add" method="POST" enctype="multipart/form-data" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2">Title</label>
+                                <input type="text" name="title" required class="w-full px-4 py-3 rounded-xl bg-[#faf8f5] dark:bg-zinc-900 border border-kaizen-tan dark:border-zinc-700 focus:outline-none focus:border-kaizen-orange transition-colors">
+                            </div>
+                            
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2">Banner Image</label>
+                                <input type="file" name="imageFilename" required accept="image/promotions" class="w-full px-4 py-3 rounded-xl bg-[#faf8f5] dark:bg-zinc-900 border border-kaizen-tan dark:border-zinc-700 focus:outline-none focus:border-kaizen-orange transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-kaizen-orange file:text-white hover:file:bg-orange-600">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2">Start Date</label>
+                                <input type="date" name="startDate" required class="w-full px-4 py-3 rounded-xl bg-[#faf8f5] dark:bg-zinc-900 border border-kaizen-tan dark:border-zinc-700 focus:outline-none focus:border-kaizen-orange transition-colors [color-scheme:light_dark]">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2">End Date</label>
+                                <input type="date" name="endDate" required class="w-full px-4 py-3 rounded-xl bg-[#faf8f5] dark:bg-zinc-900 border border-kaizen-tan dark:border-zinc-700 focus:outline-none focus:border-kaizen-orange transition-colors [color-scheme:light_dark]">
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2">Description</label>
+                                <textarea name="description" rows="3" class="w-full px-4 py-3 rounded-xl bg-[#faf8f5] dark:bg-zinc-900 border border-kaizen-tan dark:border-zinc-700 focus:outline-none focus:border-kaizen-orange transition-colors"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 pt-2">
+                            <input type="checkbox" name="isActive" id="isActive" checked class="w-5 h-5 accent-kaizen-orange rounded">
+                            <label for="isActive" class="text-sm font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer">Active</label>
+                        </div>
+
+                        <div class="pt-6 border-t border-kaizen-tan dark:border-zinc-800 flex justify-end gap-4">
+                            <a href="/promotions" class="px-6 py-3 rounded-xl font-bold text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">Cancel</a>
+                            <button type="submit" class="bg-kaizen-orange hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-all active:scale-95 uppercase tracking-wide text-sm flex items-center gap-2">
+                                <i data-lucide="save" class="w-4 h-4"></i> Save Promotion
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        lucide.createIcons();
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</body>
+</html>
