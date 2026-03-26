@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../../head.ejs') %>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { kaizen: { bg: '#fdfbf7', red: '#E60000', orange: '#ea580c', tan: '#e8dccb', dark: '#18181b', darker: '#09090b' } } } } }
+    </script>
+</head>
+<body class="bg-kaizen-bg dark:bg-kaizen-darker text-zinc-800 dark:text-zinc-100 transition-colors duration-300 min-h-screen font-sans">
+    <div class="flex flex-col min-h-screen">
+        <main class="p-4 md:p-10 flex-grow">
+            <div class="max-w-4xl mx-auto">
+                
+                <div class="mb-8 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <a href="/orders" class="p-2 rounded-full bg-white dark:bg-kaizen-dark shadow-sm border border-kaizen-tan dark:border-zinc-800 hover:scale-105 transition text-zinc-500">
+                            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                        </a>
+                        <h1 class="text-3xl font-black tracking-wide text-zinc-900 dark:text-zinc-100 uppercase">
+                            Order <span class="text-kaizen-orange">Details</span>
+                        </h1>
+                    </div>
+                    <div class="px-4 py-2 rounded-full text-sm font-bold tracking-wider uppercase border border-kaizen-tan dark:border-zinc-700 bg-white dark:bg-kaizen-dark">
+                        Status: <span class="text-kaizen-orange"><%= order.status %></span>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-kaizen-dark border border-kaizen-tan dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden">
+                    
+                    <div class="p-6 md:p-8 border-b border-kaizen-tan dark:border-zinc-800 flex flex-col md:flex-row justify-between gap-6">
+                        <div>
+                            <p class="text-sm font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">Order ID</p>
+                            <p class="text-xl font-black">#<%= order._id.toString().slice(-6).toUpperCase() %></p>
+                            <p class="text-sm text-zinc-500 mt-2"><%= new Date(order.createdAt).toLocaleString() %></p>
+                        </div>
+                        <div class="text-left md:text-right">
+                            <p class="text-sm font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">Customer Info</p>
+                            <p class="font-bold text-lg"><%= order.customerName %></p>
+                            <div class="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-sm font-semibold">
+                                <% if (order.orderType === 'Takeaway') { %>
+                                    <i data-lucide="shopping-bag" class="w-4 h-4 text-kaizen-orange"></i> Takeaway
+                                <% } else { %>
+                                    <i data-lucide="utensils" class="w-4 h-4 text-[#1db954]"></i> Dine-in (Table: <%= order.tableNumber || '-' %>)
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 md:p-8">
+                        <p class="text-sm font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-4">Order Items</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-kaizen-tan dark:border-zinc-800">
+                                        <th class="py-3 px-4 font-bold text-sm text-zinc-500 uppercase w-2/3">Item</th>
+                                        <th class="py-3 px-4 font-bold text-sm text-zinc-500 uppercase text-center w-1/6">Qty</th>
+                                        <th class="py-3 px-4 font-bold text-sm text-zinc-500 uppercase text-right w-1/6">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (order.items && order.items.length > 0) { %>
+                                        <% order.items.forEach(item => { %>
+                                        <tr class="border-b border-zinc-100 dark:border-zinc-800/50">
+                                            <td class="py-4 px-4">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="w-12 h-12 rounded-lg bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex-shrink-0 border border-kaizen-tan dark:border-zinc-700">
+                                                        <% if (item.image) { %>
+                                                            <img src="/images/product/<%= item.image %>" alt="<%= item.name %>" class="w-full h-full object-cover">
+                                                        <% } else { %>
+                                                            <div class="w-full h-full flex items-center justify-center text-zinc-400">
+                                                                <i data-lucide="image" class="w-6 h-6"></i>
+                                                            </div>
+                                                        <% } %>
+                                                    </div>
+                                                    <div>
+                                                        <p class="font-bold text-zinc-900 dark:text-white"><%= item.menuName %></p>
+                                                        <% if (item.note) { %>
+                                                            <p class="text-xs text-zinc-500 mt-0.5"><i data-lucide="pen-line" class="inline w-3 h-3 mr-1"></i><%= item.note %></p>
+                                                        <% } %>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-4 px-4 font-bold text-center text-zinc-500"><%= item.quantity || 1 %></td>
+                                            <td class="py-4 px-4 font-bold text-right">฿<%= item.price %></td>
+                                        </tr>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="3" class="py-6 text-center text-zinc-500 italic">No items found in this order.</td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="p-6 md:p-8 bg-zinc-50 dark:bg-zinc-900/50 border-t border-kaizen-tan dark:border-zinc-800 flex justify-end">
+                        <div class="text-right">
+                            <p class="text-sm font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">Total Amount</p>
+                            <p class="text-3xl font-black text-kaizen-orange">฿<%= order.amount || 0 %></p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        lucide.createIcons();
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</body>
+</html>
