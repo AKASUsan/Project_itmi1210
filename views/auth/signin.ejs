@@ -109,7 +109,10 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         lucide.createIcons();
-
+        
+         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
         function togglePassword(inputId, eyeIconId, eyeOffIconId) {
             const input = document.getElementById(inputId);
             const eyeIcon = document.getElementById(eyeIconId);
