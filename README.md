@@ -14,6 +14,9 @@ A Ramen POS system built with Express.js for the backend and EJS for the fronten
 
 ## Installation
  Download and install MongoDB Community Server from the [MongoDB](https://www.mongodb.com/try/download/community)
+ **Database Setup:** Import the JSON files from the `./fileData` folder into your MongoDB collections (e.g., employees, ingredients, products, promotions).
+
+ ## Getting Started
  ```bash
 # Clone Project
 $ git clone https://github.com/AKASUsan/Project_itmi1210.git
