@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../head.ejs') %>
+</head>
+<body class="bg-kaizen-bg dark:bg-kaizen-darker text-zinc-800 dark:text-zinc-100 min-h-screen font-sans">
+  <main class="p-4 md:p-10">
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-6">
+        <button onclick="history.back()" class="text-sm text-gray-500 hover:text-amber-600 flex items-center gap-2">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
+        </button>
+      </div>
+
+      <div class="flex justify-between items-center mb-10">
+        <div>
+          <h1 class="text-4xl font-black uppercase">Stock <span class="text-kaizen-orange">Inventory</span></h1>
+          <p class="text-zinc-500 italic mt-1">"Manage and refill your kitchen essentials."</p>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-kaizen-dark border border-kaizen-tan dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="bg-[#f5ece0] dark:bg-zinc-900 border-b border-kaizen-tan dark:border-zinc-800 text-xs uppercase font-bold tracking-widest">
+              <th class="px-6 py-4">Ingredient Name</th>
+              <th class="px-6 py-4">Current Stock</th>
+              <th class="px-6 py-4">Status</th>
+              <th class="px-6 py-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-kaizen-tan/50 dark:divide-zinc-800">
+            <% ingredients.forEach(ing => { %>
+              <tr class="hover:bg-[#faf8f5] dark:hover:bg-zinc-800/50 transition-colors">
+                <td class="px-6 py-5 font-bold uppercase text-sm"><%= ing.name %></td>
+                <td class="px-6 py-5">
+                  <span class="text-lg font-black <%= ing.quantity <= ing.minThreshold ? 'text-red-500' : 'text-kaizen-orange' %>">
+                    <%= ing.quantity %>
+                  </span>
+                  <span class="text-xs text-zinc-400 ml-1"><%= ing.unit %></span>
+                </td>
+                <td class="px-6 py-5">
+                  <% if(ing.quantity <= ing.minThreshold) { %>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-100 text-red-700 border border-red-200">LOW STOCK</span>
+                  <% } else { %>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">AVAILABLE</span>
+                  <% } %>
+                </td>
+                <td class="px-6 py-5 text-right">
+                  <button onclick="openRefillModal('<%= ing._id %>', '<%= ing.name %>')" class="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-kaizen-orange hover:text-white transition-all">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                  </button>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    lucide.createIcons();
+
+    async function openRefillModal(id, name) {
+      const { value: amount } = await Swal.fire({
+        title: `Refill ${name}`,
+        input: 'number',
+        inputLabel: 'Enter amount to add',
+        inputPlaceholder: 'e.g. 50',
+        showCancelButton: true,
+        confirmButtonColor: '#ff6b00'
+      });
+
+      if (amount) {
+        try {
+          const res = await fetch(`/inventory/refill/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount })
+          });
+          if (res.ok) {
+            Swal.fire('Updated!', 'Stock has been refilled.', 'success').then(() => location.reload());
+          }
+        } catch (err) {
+          Swal.fire('Error', 'Failed to update stock', 'error');
+        }
+      }
+    }
+  </script>
+</body>
+</html>
