@@ -2,56 +2,44 @@
 <html lang="en">
   <head>
     <%- include('../head') %>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
+   
   </head>
 
-  <body class="bg-[#050505] text-white font-sans">
+  <body class="bg-kaizen-bg dark:bg-kaizen-darker text-zinc-800 dark:text-zinc-100 transition-colors duration-300 min-h-screen font-sans">
     <div class="flex h-screen p-4 gap-4 overflow-hidden">
       <%- include('navbardashboard') %>
+      
       <main class="flex-1 overflow-y-auto space-y-6 p-4">
-        <header
-          class="flex justify-between items-center pb-6 border-b border-white/5"
-        >
+        <header class="flex justify-between items-center pb-6 border-b border-gray-200 dark:border-white/5">
           <div>
-            <h1 class="text-2xl font-black uppercase tracking-tight text-white">
+            <h1 class="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-white">
               Main Dashboard
             </h1>
-            <p
-              class="text-[10px] text-gray-500 font-bold uppercase tracking-[2px]"
-            >
+            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-[2px]">
               Overview & Analytics
             </p>
           </div>
+          
           <div class="flex items-center gap-4">
-            <button
-              onclick="toggleTheme()"
-              class="p-2 text-white hover:bg-white/20 rounded-full transition duration-300"
-            >
-              <i data-lucide="sun" class="w-5 h-5 dark:hidden"></i>
-              <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+            <button onclick="toggleTheme()" class="p-2 text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20 rounded-full transition duration-300">
+              <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+              <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
             </button>
+            
             <div class="relative" x-data="{ open: false }">
-               <% const imgPath = (user.role === 'admin' || user.role === 'staff') ? '/images/employeeProfile/' : '/images/profile/'; %>
+              <% const imgPath = (user.role === 'admin' || user.role === 'staff') ? '/images/employeeProfile/' : '/images/profile/'; %>
               <button
                 @click.stop="open = !open"
-                class="flex items-center gap-3 p-1 pr-3 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300 border border-white/10"
+                class="flex items-center gap-3 p-1 pr-3 bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700 rounded-full transition-all duration-300 border border-gray-200 dark:border-zinc-700 shadow-sm dark:shadow-none"
               >
                 <img
                   src="<%= imgPath %><%= user.image %>"
                   class="w-8 h-8 rounded-full object-cover border-2 border-orange-500"
                 />
-                <span class="text-white text-sm font-medium hidden sm:block">
+                <span class="text-gray-800 dark:text-white text-sm font-medium hidden sm:block">
                   <%= employee.name %>
                 </span>
-                <i
-                  class="fas fa-chevron-down text-white text-[10px] transition-transform"
-                  :class="open ? 'rotate-180' : ''"
-                ></i>
+                <i data-lucide="chevron-down" class="text-white text-[10px] transition-transform" :class="open ? 'rotate-90' : ''"></i>
               </button>
 
               <div
@@ -63,205 +51,257 @@
                 x-transition:leave="transition ease-in duration-75"
                 x-transition:leave-start="transform opacity-100 scale-100"
                 x-transition:leave-end="transform opacity-0 scale-95"
-                class="absolute right-0 mt-3 w-56 origin-top-right rounded-2xl bg-white dark:bg-neutral-900 shadow-2xl ring-1 ring-black ring-opacity-5 z-[110] overflow-hidden"
+                class="absolute right-0 mt-3 w-56 origin-top-right rounded-2xl bg-white dark:bg-zinc-900 shadow-xl border border-gray-100 dark:border-zinc-800 z-[110] overflow-hidden"
                 style="display: none"
               >
-                <div
-                  class="px-4 py-3 bg-emerald-500/10 border-b border-gray-100 dark:border-white/5"
-                >
-                  <p class="text-xs text-gray-500 dark:text-gray-400">
-                    Role Sign
-                  </p>
-                  <p
-                    class="text-sm font-bold text-orange-600 dark:text-orange-400 truncate"
-                  >
+                <div class="px-4 py-3 bg-emerald-500/10 border-b border-gray-100 dark:border-zinc-800">
+                  <p class="text-xs text-gray-500 dark:text-gray-400">Role Sign</p>
+                  <p class="text-sm font-bold text-orange-600 dark:text-orange-400 truncate">
                     <%= employee.role %>
                   </p>
                 </div>
                 <div class="py-1">
-                  <a
-                    href="/"
-                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-white/5 transition"
-                  >
-                    <i class="fas fa-home text-orange-500 w-5 text-center"></i>
-                    Home
-                  </a>
-                  <a
-                    href="/profile"
-                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-white/5 transition"
-                  >
-                    <i
-                      class="fas fa-user-circle text-orange-500 w-5 text-center"
-                    ></i>
-                    My Profile
-                  </a>
-                  <a
-                    href="/settings"
-                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-white/5 transition"
-                  >
-                    <i class="fas fa-cog text-orange-500 w-5 text-center"></i>
-                    Settings
-                  </a>
-                  <a
-                    href="/logout"
-                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition font-bold"
-                  >
-                    <i class="fas fa-sign-out-alt w-5"></i> Sign Out
-                  </a>
+                  <a href="/" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-white/5 transition">
+                  <i data-lucide="house" class=" text-orange-500 w-5 text-center"></i> Home
+                </a>
+                  <a href="/profile" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-white/5 transition">
+                    <i data-lucide="circle-user-round" class=" text-orange-500 w-5 text-center"></i> My Profile
+                </a>
+                  <a href="/settings" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-white/5 transition">
+                    <i data-lucide="settings" class=" text-orange-500 w-5 text-center"></i> Settings
+                </a>
+                  <a href="/logout" class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition font-bold">
+                    <i data-lucide="log-out" class=" w-5 text-center"></i> Sign Out
+                </a>
                 </div>
               </div>
             </div>
           </div>
         </header>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div class="bg-[#1a1a1a] p-5 rounded-2xl border border-gray-800">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+          <div class="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm dark:shadow-none transition-colors">
             <div class="flex justify-between">
               <div>
-                <p class="text-[10px] text-gray-500 uppercase font-bold">
-                  Total Menus
-                </p>
-                <h2 class="text-xl font-black mt-1">
-                  <%= data.stats.menus %> Items
-                </h2>
+                <p class="text-[10px] text-gray-500 uppercase font-bold">Total Menus</p>
+                <h2 class="text-xl font-black mt-1 text-gray-900 dark:text-white"><%= data.stats.menus %> Items</h2>
               </div>
-              <i class="fa-solid fa-utensils text-gray-700"></i>
+              <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center">
+                <i class="fa-solid fa-utensils text-gray-600 dark:text-gray-400"></i>
+              </div>
             </div>
           </div>
-          <div class="bg-[#1a1a1a] p-5 rounded-2xl border border-gray-800">
+          
+          <div class="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm dark:shadow-none transition-colors">
             <div class="flex justify-between">
               <div>
-                <p
-                  class="text-[10px] text-gray-500 uppercase font-bold text-green-500"
-                >
-                  Completed Today
-                </p>
-                <h2 class="text-xl font-black mt-1">
-                  <%= data.stats.completed %> Orders
-                </h2>
+                <p class="text-[10px] text-blue-500 uppercase font-bold">Today's Orders</p>
+                <h2 class="text-xl font-black mt-1 text-gray-900 dark:text-white"><%= data.stats.todayOrders %> Orders</h2>
               </div>
-              <i class="fa-solid fa-check text-green-900/30"></i>
+              <div class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
+                <i class="fa-solid fa-clipboard-list text-blue-500"></i>
+              </div>
             </div>
           </div>
-          <div class="bg-[#1a1a1a] p-5 rounded-2xl border border-gray-800">
+
+          <div class="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm dark:shadow-none transition-colors">
             <div class="flex justify-between">
               <div>
-                <p
-                  class="text-[10px] text-gray-500 uppercase font-bold text-orange-500"
-                >
-                  Income Today
-                </p>
-                <h2 class="text-xl font-black mt-1">
-                  ฿<%= data.stats.revenue.toLocaleString() %>
-                </h2>
+                <p class="text-[10px] text-emerald-500 uppercase font-bold">Total Orders</p>
+                <h2 class="text-xl font-black mt-1 text-gray-900 dark:text-white"><%= data.stats.totalOrders %> Orders</h2>
               </div>
-              <i class="fa-solid fa-wallet text-orange-900/30"></i>
+              <div class="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
+                <i class="fa-solid fa-check-double text-emerald-500"></i>
+              </div>
             </div>
           </div>
-          <div class="bg-[#1a1a1a] p-5 rounded-2xl border border-gray-800">
+
+          <div class="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm dark:shadow-none transition-colors">
             <div class="flex justify-between">
               <div>
-                <p
-                  class="text-[10px] text-gray-500 uppercase font-bold text-blue-400"
-                >
-                  Staff
-                </p>
-                <h2 class="text-xl font-black mt-1">
-                  <%= data.stats.staff %> Persons
-                </h2>
+                <p class="text-[10px] text-orange-500 uppercase font-bold">Today's Revenue</p>
+                <h2 class="text-xl font-black mt-1 text-gray-900 dark:text-white">฿<%= (data.stats.todayRevenue || 0).toLocaleString() %></h2>
               </div>
-              <i class="fa-solid fa-users text-blue-900/30"></i>
+              <div class="w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center">
+                <i class="fa-solid fa-coins text-orange-500"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-sm dark:shadow-none transition-colors">
+            <div class="flex justify-between">
+              <div>
+                <p class="text-[10px] text-purple-500 uppercase font-bold">Total Revenue</p>
+                <h2 class="text-xl font-black mt-1 text-gray-900 dark:text-white">฿<%= (data.stats.totalRevenue || 0).toLocaleString() %></h2>
+              </div>
+              <div class="w-8 h-8 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center">
+                <i class="fa-solid fa-wallet text-purple-500"></i>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="bg-[#1a1a1a] p-6 rounded-3xl border border-gray-800 mb-6">
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xs font-bold uppercase text-gray-400"><i class="fa-solid fa-chart-line mr-2"></i>Revenue Analytics</h3>
-        <div class="flex bg-black/40 p-1 rounded-xl border border-gray-800">
-            <button onclick="updateMainChart('daily')" class="text-[10px] px-3 py-1 rounded-lg hover:bg-white/5 transition">7 Days</button>
-            <button onclick="updateMainChart('monthly')" class="text-[10px] px-3 py-1 rounded-lg hover:bg-white/5 transition">30 Days</button>
-            <button onclick="updateMainChart('sixMonth')" class="text-[10px] px-3 py-1 rounded-lg hover:bg-white/5 transition">6 Months</button>
+        <div class="bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-gray-200 dark:border-zinc-800 shadow-sm dark:shadow-none mb-6 transition-colors">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xs font-bold uppercase text-gray-600 dark:text-gray-400">
+              <i class="fa-solid fa-chart-area mr-2"></i>Revenue Analytics
+            </h3>
+            <div class="flex bg-gray-100 dark:bg-zinc-800/50 p-1 rounded-xl border border-gray-200 dark:border-zinc-800">
+              <button onclick="updateMainChart('daily')" class="text-[10px] px-3 py-1 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-zinc-700 hover:shadow-sm transition font-medium">7 Days</button>
+              <button onclick="updateMainChart('monthly')" class="text-[10px] px-3 py-1 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-zinc-700 hover:shadow-sm transition font-medium">30 Days</button>
+              <button onclick="updateMainChart('sixMonth')" class="text-[10px] px-3 py-1 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-zinc-700 hover:shadow-sm transition font-medium">6 Months</button>
+            </div>
+          </div>
+          <div style="height: 320px; position: relative;">
+            <canvas id="revenueChart" 
+              data-daily='<%- JSON.stringify(data.charts.daily) %>'
+              data-monthly='<%- JSON.stringify(data.charts.monthly) %>'
+              data-sixmonth='<%- JSON.stringify(data.charts.sixMonth) %>'>
+            </canvas>
+          </div>
         </div>
-    </div>
-    <div style="height: 300px; position: relative;">
-        <canvas id="revenueChart" 
-            data-daily='<%- JSON.stringify(data.charts.daily) %>'
-            data-monthly='<%- JSON.stringify(data.charts.monthly) %>'
-            data-sixmonth='<%- JSON.stringify(data.charts.sixMonth) %>'></canvas>
-    </div>
-</div>
 
-<div class="bg-[#1a1a1a] p-6 rounded-3xl border border-gray-800">
-    <h3 class="text-xs font-bold mb-6 uppercase text-gray-400"><i class="fa-solid fa-clock-rotate-left mr-2"></i>Recent Orders</h3>
-    <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm">
-            <thead>
-                <tr class="text-gray-500 border-b border-gray-800">
-                    <th class="pb-3">Order ID</th>
-                    <th class="pb-3">Customer</th>
-                    <th class="pb-3">Status</th>
-                    <th class="pb-3">Amount</th>
+        <div class="bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-gray-200 dark:border-zinc-800 shadow-sm dark:shadow-none transition-colors">
+          <h3 class="text-xs font-bold mb-6 uppercase text-gray-600 dark:text-gray-400">
+            <i class="fa-solid fa-clock-rotate-left mr-2"></i>Recent Orders
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead>
+                <tr class="text-gray-500 border-b border-gray-200 dark:border-zinc-800">
+                  <th class="pb-3 font-semibold">Order ID</th>
+                  <th class="pb-3 font-semibold">Customer</th>
+                  <th class="pb-3 font-semibold">Status</th>
+                  <th class="pb-3 font-semibold">Amount</th>
                 </tr>
-            </thead>
-            <tbody class="text-gray-300">
+              </thead>
+              <tbody class="text-gray-700 dark:text-gray-300">
                 <% data.recentOrders.forEach(order => { %>
-                <tr class="border-b border-gray-800/50 hover:bg-white/5 transition">
-                    <td class="py-4 font-mono text-orange-500">#<%= order._id.toString().slice(-6).toUpperCase() %></td>
-                    <td class="py-4"><%= order.memberId ? order.memberId.name : 'Walk-in' %></td>
-                    <td class="py-4">
-                        <span class="px-2 py-1 rounded-full text-[10px] uppercase font-bold 
-                            <%= order.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500' %>">
-                            <%= order.status %>
-                        </span>
-                    </td>
-                    <td class="py-4 font-bold text-white">฿<%= order.totalAmount %></td>
+                <tr class="border-b border-gray-100 dark:border-zinc-800/50 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">
+                  <td class="py-4 font-mono text-orange-600 dark:text-orange-500">#<%= order._id.toString().slice(-6).toUpperCase() %></td>
+                  <td class="py-4"><%= order.memberId ? order.memberId.name : 'Walk-in' %></td>
+                  <td class="py-4">
+                    <span class="px-2 py-1 rounded-full text-[10px] uppercase font-bold 
+                      <%= order.status === 'completed' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-500' : 'bg-orange-100 text-orange-600 dark:bg-orange-500/10 dark:text-orange-500' %>">
+                      <%= order.status %>
+                    </span>
+                  </td>
+                  <td class="py-4 font-bold text-gray-900 dark:text-white">฿<%= (order.totalAmount || 0) %></td>
                 </tr>
                 <% }) %>
-            </tbody>
-        </table>
-    </div>
-</div>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('revenueChart');
-    const chartData = {
-        daily: JSON.parse(ctx.getAttribute('data-daily')),
-        monthly: JSON.parse(ctx.getAttribute('data-monthly')),
-        sixMonth: JSON.parse(ctx.getAttribute('data-sixmonth'))
-    };
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script>
+      lucide.createIcons();
 
-    let mainChart = new Chart(ctx, {
+      function toggleTheme() {
+        const html = document.documentElement;
+        if (html.classList.contains('dark')) {
+          html.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        } else {
+          html.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        }
+        lucide.createIcons();
+        updateChartTheme();
+      }
+
+      const ctxElement = document.getElementById('revenueChart');
+      const ctx = ctxElement.getContext('2d');
+      
+      const chartData = {
+        daily: JSON.parse(ctxElement.getAttribute('data-daily')),
+        monthly: JSON.parse(ctxElement.getAttribute('data-monthly')),
+        sixMonth: JSON.parse(ctxElement.getAttribute('data-sixmonth'))
+      };
+
+      let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+      gradient.addColorStop(0, 'rgba(249, 115, 22, 0.4)');
+      gradient.addColorStop(1, 'rgba(249, 115, 22, 0.0)');
+
+      Chart.defaults.font.family = "'Inter', 'sans-serif'";
+
+      let mainChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: chartData.daily.labels,
-            datasets: [{
-                data: chartData.daily.values,
-                borderColor: '#f97316',
-                backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                fill: true,
-                tension: 0.4,
-                borderWidth: 3
-            }]
+          labels: chartData.daily.labels,
+          datasets: [{
+            label: 'Revenue (฿)',
+            data: chartData.daily.values,
+            borderColor: '#f97316',
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.4,
+            borderWidth: 3,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: '#f97316',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-    });
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: { 
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              titleFont: { size: 13 },
+              bodyFont: { size: 14, weight: 'bold' },
+              padding: 12,
+              cornerRadius: 8,
+              displayColors: false,
+              callbacks: {
+                label: function(context) {
+                  return '฿ ' + context.parsed.y.toLocaleString();
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false, drawBorder: false },
+              ticks: { color: '#9ca3af', font: { size: 11 } }
+            },
+            y: {
+              border: { dash: [4, 4], display: false },
+              grid: { color: 'rgba(156, 163, 175, 0.1)' },
+              ticks: { 
+                color: '#9ca3af', 
+                font: { size: 11 },
+                callback: function(value) { return '฿' + value; }
+              }
+            }
+          }
+        }
+      });
 
-    function updateMainChart(type) {
+      function updateMainChart(type) {
         mainChart.data.labels = chartData[type].labels;
         mainChart.data.datasets[0].data = chartData[type].values;
         mainChart.update();
-    }
-</script>
-    <script
-      defer
-      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
-    <script>
-      lucide.createIcons();
+      }
+
+      function updateChartTheme() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+        mainChart.options.scales.y.grid.color = gridColor;
+        mainChart.update();
+      }
+      
+      updateChartTheme();
     </script>
-    
   </body>
 </html>
