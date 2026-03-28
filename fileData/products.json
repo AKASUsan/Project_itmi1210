@@ -1,0 +1,128 @@
+[
+    {
+        "_id": {
+            "$oid": "69a9d1c646fe8642a8941343"
+        },
+        "name": "Tonkotsu Chashu Ramen",
+        "price": 180,
+        "image": "tonkotsu.png",
+        "description": "ราเมงซุปกระดูกหมูเข้มข้นสไตล์ฮากาตะ พร้อมหมูชาชูชิ้นโต",
+        "category": "Ramen",
+        "brothType": "Tonkotsu",
+        "noodleType": "Thin",
+        "spicyLevel": 0,
+        "toppings": [
+            "Chashu",
+            "Ajitama",
+            "Nori",
+            "Green Onion"
+        ],
+        "allergens": [
+            "Wheat",
+            "Egg",
+            "Soy",
+            "Pork"
+        ],
+        "isVegetarian": false,
+        "isAvailable": true
+    },
+    {
+        "_id": {
+            "$oid": "69a9d1c646fe8642a8941344"
+        },
+        "name": "Yuzu Shio Ramen",
+        "price": 170,
+        "image": "yuzu_shio.png",
+        "description": "ราเมงซุปเกลือผสมส้มยูซุ หอมสดชื่น",
+        "category": "Ramen",
+        "brothType": "Shio",
+        "noodleType": "Thin",
+        "spicyLevel": 0,
+        "toppings": [
+            "Chicken Breast",
+            "Ajitama",
+            "Mizuna"
+        ],
+        "allergens": [
+            "Wheat",
+            "Egg"
+        ],
+        "isVegetarian": false,
+        "isAvailable": true
+    },
+    {
+        "_id": {
+            "$oid": "69a9d1c646fe8642a8941345"
+        },
+        "name": "Spicy Miso Ramen",
+        "price": 195,
+        "image": "spicy_miso.png",
+        "description": "ราเมงซุปเต้าเจี้ยวญี่ปุ่นรสเผ็ดร้อน หอมกลิ่นกระทะ",
+        "category": "Ramen",
+        "brothType": "Miso",
+        "noodleType": "Thick",
+        "spicyLevel": 3,
+        "toppings": [
+            "Minced Pork",
+            "Corn",
+            "Butter",
+            "Bean Sprouts"
+        ],
+        "allergens": [
+            "Wheat",
+            "Soy",
+            "Dairy"
+        ],
+        "isVegetarian": false,
+        "isAvailable": true
+    },
+    {
+        "_id": {
+            "$oid": "69a9d1c646fe8642a8941346"
+        },
+        "name": "Classic Shoyu Ramen",
+        "price": 150,
+        "image": "shoyu.png",
+        "description": "ราเมงซุปซีอิ๊วญี่ปุ่นใส รสชาติกลมกล่อม ทานง่าย",
+        "category": "Ramen",
+        "brothType": "Shoyu",
+        "noodleType": "Standard",
+        "spicyLevel": 0,
+        "toppings": [
+            "Chashu",
+            "Menma",
+            "Nori"
+        ],
+        "allergens": [
+            "Wheat",
+            "Soy",
+            "Chicken"
+        ],
+        "isVegetarian": false,
+        "isAvailable": true
+    },
+    {
+        "_id": {
+            "$oid": "69a9d1c646fe8642a8941347"
+        },
+        "name": "Vegan Tomato Ramen",
+        "price": 160,
+        "image": "vegan_tomato.png",
+        "description": "ราเมงซุปมะเขือเทศเข้มข้น สำหรับคนรักสุขภาพ",
+        "category": "Ramen",
+        "brothType": "Other",
+        "noodleType": "Standard",
+        "spicyLevel": 1,
+        "toppings": [
+            "Grilled Tomato",
+            "Mushroom",
+            "Spinach"
+        ],
+        "allergens": [
+            "Wheat",
+            "Soy"
+        ],
+        "isVegetarian": true,
+        "isAvailable": true
+    }
+]
