@@ -5,7 +5,17 @@ const multer = require("multer");
 
 const Employee = require("../models/employees");
 
-router.get("/employee", async (req,res) =>{
+const authadmin = (req, res, next) => {
+  if (req.session && req.session.user && req.session.user.role === "admin") {
+    return next();
+  }
+  if(req.session && req.session.user && req.session.user.role === "staff"){
+   return res.redirect("/pos");
+  }
+  res.redirect("/");
+};
+
+router.get("/employee",authadmin, async (req,res) =>{
   try{
     const title = "Employee Management";
     const employees = await Employee.find();
@@ -17,7 +27,7 @@ router.get("/employee", async (req,res) =>{
     res.status(500).json({message: "Server Error", error:err.message})
   }
 })
-router.get('/employee/add', (req, res) => {
+router.get('/employee/add',authadmin, (req, res) => {
     const title = "Add Employee"
     res.render('Dashboard/employee/empform', {title});
 });
@@ -44,7 +54,7 @@ router.post('/employee/add', async (req, res) => {
     }
 });
 
-router.get('/employee/edit/:id', async (req, res) => {
+router.get('/employee/edit/:id',authadmin, async (req, res) => {
     try {
         const title = "Edit Employees"
         const employee = await Employee.findById(req.params.id);
@@ -54,7 +64,7 @@ router.get('/employee/edit/:id', async (req, res) => {
     }
 });
 
-router.post('/employee/edit/:id', async (req, res) => {
+router.post('/employee/edit/:id',authadmin, async (req, res) => {
     try {
         const { name, email, phone, role, salary, isActive, password } = req.body;
         let updateData = {
@@ -77,7 +87,7 @@ router.post('/employee/edit/:id', async (req, res) => {
     }
 });
 
-router.post('/employee/delete/:id', async (req, res) => {
+router.post('/employee/delete/:id',authadmin, async (req, res) => {
     try {
         await Employee.findByIdAndDelete(req.params.id);
         res.redirect('/employee');

@@ -51,14 +51,18 @@ auth.get("/profile", async (req, res) => {
   }
   try {
     const title = "Profile";
+    
     let user =
-      (await Member.findById(req.session.user._id)) ||
-      (await Employee.findById(req.session.user._id));
+      (await Member.findById(req.session.user._id).lean()) ||
+      (await Employee.findById(req.session.user._id).lean());
 
     if (!user) {
       req.session.destroy();
       return res.redirect("/signin");
     }
+
+    console.log(user); 
+
     res.render("auth/profile", {
       title: title,
       user: user,
@@ -166,12 +170,20 @@ auth.post("/signin", async (req, res) => {
     }
 
     req.session.user = user;
-    req.session.role = isEmployee ? user.role : "member";
+    const role = isEmployee ? user.role : "member";
+    req.session.role = role;
 
-    res.redirect("/");
+    if (role === "admin") {
+      return res.redirect("/dashboard");
+    } else if (role === "staff") {
+      return res.redirect("/pos");
+    } else {
+      return res.redirect("/");
+    }
+
   } catch (err) {
     console.error(err);
-    res.status(500).json("auth/signin", { error: "Error Sign in user" });
+    res.status(500).render("auth/signin", { error: "Error Sign in user" });
   }
 });
 
@@ -180,9 +192,7 @@ auth.get("/myorders", async (req, res) => {
     const title = "Orders";
     const userId = req.session.userId;
 
-    const orders = await Orders.find({ userId: userId }).sort({
-      createdAt: -1,
-    });
+   const orders = await Order.find({ memberId: req.session.user?._id }).sort({ createdAt: -1 });
     res.render("auth/orders", { title: title, orders: orders });
   } catch (err) {
     console.error(err);
