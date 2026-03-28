@@ -2,20 +2,19 @@
 <html lang="en">
 <head>
     <%- include('../../head.ejs') %>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { kaizen: { bg: '#fdfbf7', red: '#E60000', orange: '#ea580c', tan: '#e8dccb', dark: '#18181b', darker: '#09090b' } } } } }
-    </script>
 </head>
 <body class="bg-kaizen-bg dark:bg-kaizen-darker text-zinc-800 dark:text-zinc-100 transition-colors duration-300 min-h-screen font-sans">
     <div class="flex flex-col min-h-screen">
         <main class="p-4 md:p-10 flex-grow">
             <div class="max-w-3xl mx-auto">
                 <div class="mb-8 flex items-center gap-4">
-                    <a href="/menus" class="p-2 rounded-full bg-white dark:bg-kaizen-dark shadow-sm border border-kaizen-tan dark:border-zinc-800 hover:scale-105 transition text-zinc-500">
-                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                    </a>
+                     <div class="mb-6">
+            <button onclick="history.back()" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-500 transition-colors font-medium group">
+                <i data-lucide="arrow-left" class="w-4 h-4 transition-transform group-hover:-translate-x-1"></i>
+                Back
+            </button>
+        </div>
+
                     <h1 class="text-3xl font-black tracking-wide text-zinc-900 dark:text-zinc-100 uppercase">
                         Edit <span class="text-kaizen-orange">Menu</span>
                     </h1>
@@ -83,7 +82,7 @@
     <script>
         lucide.createIcons();
         
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         }
 

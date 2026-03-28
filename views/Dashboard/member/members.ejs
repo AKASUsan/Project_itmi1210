@@ -2,25 +2,16 @@
 <html lang="en">
 <head>
   <%- include('../../head.ejs') %>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-      tailwind.config = {
-          darkMode: 'class',
-          theme: { extend: { colors: { kaizen: { bg: '#fdfbf7', red: '#E60000', orange: '#ea580c', tan: '#e8dccb', dark: '#18181b', darker: '#09090b' } } } }
-      }
-  </script>
 </head>
 <body class="bg-kaizen-bg dark:bg-kaizen-darker text-zinc-800 dark:text-zinc-100 transition-colors duration-300 min-h-screen font-sans">
     <div class="flex flex-col min-h-screen">
         <main class="p-4 md:p-10 flex-grow">
             <div class="max-w-7xl mx-auto">
                  <div class="mb-6">
-                        <a href="/dashboard" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-500 transition-colors font-medium group">
+                        <button onclick="history.back()" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-500 transition-colors font-medium group">
                             <i data-lucide="arrow-left" class="w-4 h-4 transition-transform group-hover:-translate-x-1"></i>
                             Back
-                        </a>
+                        </button>
                     </div>
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
                     <div>
@@ -28,12 +19,6 @@
                             Kaizen <span class="text-kaizen-orange">Members</span>
                         </h1>
                         <p class="text-zinc-500 dark:text-zinc-400 font-medium italic mt-1">"Rewarding our loyal ramen enthusiasts."</p>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <button onclick="toggleDarkMode()" class="p-3 rounded-full bg-white dark:bg-kaizen-dark shadow-sm border border-kaizen-tan dark:border-zinc-800 hover:scale-105 transition text-kaizen-orange">
-                            <i data-lucide="moon" id="icon-moon" class="w-5 h-5"></i>
-                            <i data-lucide="sun" id="icon-sun" class="w-5 h-5 hidden"></i>
-                        </button>
                     </div>
                 </div>
 
@@ -104,20 +89,19 @@
 
     <script>
         lucide.createIcons();
-        function toggleDarkMode() {
-            const html = document.documentElement;
-            html.classList.toggle('dark');
-            document.getElementById('icon-moon').classList.toggle('hidden');
-            document.getElementById('icon-sun').classList.toggle('hidden');
-            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        function toggleTheme() {
+        const html = document.documentElement;
+        if (html.classList.contains('dark')) {
+          html.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        } else {
+          html.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
         }
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            document.addEventListener('DOMContentLoaded', () => {
-                document.getElementById('icon-moon').classList.add('hidden');
-                document.getElementById('icon-sun').classList.remove('hidden');
-            });
-        }
+        lucide.createIcons();
+        updateChartTheme();
+      }
+
         function confirmDelete(id, name) {
             const isDark = document.documentElement.classList.contains('dark');
             Swal.fire({
