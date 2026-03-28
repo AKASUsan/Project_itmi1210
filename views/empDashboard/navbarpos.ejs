@@ -1,0 +1,35 @@
+<aside
+    class="w-20 lg:w-72 bg-white/80 dark:bg-[#121212]/80 backdrop-blur-2xl border border-gray-200 dark:border-white/5 rounded-[2.5rem] flex flex-col shadow-xl transition-all duration-300">
+
+    <div class="p-8 flex justify-center lg:justify-start items-center group cursor-pointer">
+        <div
+            class="w-12 h-12 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110">
+            <div
+                class="h-8 w-8 bg-[url('/images/icon/ramen_w.png')] dark:bg-[url('/images/icon/ramen_d.png')] bg-cover">
+            </div>
+        </div>
+        <span class="hidden lg:block ml-4 text-2xl font-black tracking-tighter dark:text-white uppercase itim-regular ">
+            KAIZEN</span>
+    </div>
+
+    <nav class="flex-1 px-4 space-y-2 mt-4">
+        <a href="/pos"
+            class="flex items-center justify-center lg:justify-start gap-4 p-4 rounded-[2rem] bg-gray-900 dark:bg-white text-white dark:text-black shadow-xl shadow-black/10 dark:shadow-white/5 transition-all hover:scale-105 active:scale-95">
+            <i data-lucide="layout-grid" class="w-6 h-6"></i>
+            <span class="hidden lg:block font-bold tracking-wide text-sm uppercase">POS</span>
+        </a>
+
+        <a href="/orders"
+            class="flex items-center justify-center lg:justify-start gap-4 p-4 rounded-[2rem] text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-white/5 hover:text-amber-600 dark:hover:text-amber-500 transition-all group">
+            <i data-lucide="shopping-bag" class="w-6 h-6 group-hover:scale-110 transition-transform"></i>
+            <span class="hidden lg:block font-medium">Orders</span>
+        </a>
+
+        <a href="/reservations"
+            class="flex items-center justify-center lg:justify-start gap-4 p-4 rounded-[2rem] text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-white/5 hover:text-amber-600 dark:hover:text-amber-500 transition-all group">
+            <i data-lucide="calendar-range" class="w-6 h-6 group-hover:scale-110 transition-transform"></i>
+            <span class="hidden lg:block font-medium">Reservations</span>
+        </a>
+
+    </nav>
+</aside>
