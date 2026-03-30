@@ -6,30 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In - Kaizen Ramen</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="/css/input.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gluten:wght@100..900&family=Itim&family=Macondo&display=swap"
         rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
-<body
-    class="relative min-h-screen text-gray-900 bg-[url('/images/background/bg-ramen.jpg')] bg-cover bg-center bg-fixed dark:text-white transition-colors duration-500">
-
+<body class="relative min-h-screen text-gray-900 bg-[url('/images/background/bg-ramen.jpg')] bg-cover bg-center bg-fixed dark:text-white transition-colors duration-500">
+    
     <div class="absolute inset-0 bg-white/70 dark:bg-black/80 backdrop-blur-sm z-0 transition-colors duration-500">
     </div>
 
     <div class="relative min-h-screen flex items-center justify-center p-4 z-10">
         <div
             class="w-full max-w-4xl bg-white/90 dark:bg-[#0f172a]/30 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-gray-200 dark:border-slate-700/80 overflow-hidden flex flex-col md:flex-row transition-colors duration-500">
-
+        
             <div class="w-full md:w-5/12 relative min-h-[250px] md:min-h-full">
                 <img src="/images/background/Ramen_Chashu.jpg" alt="Kaizen Ramen"
                     class="absolute inset-0 w-full h-full object-cover">
-                <div
-                    class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-white via-white/50 dark:from-[#0f172a] dark:via-[#0f172a]/50 to-transparent transition-colors duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-white via-white/50 dark:from-[#0f172a] dark:via-[#0f172a]/50 to-transparent transition-colors duration-500">
                 </div>
                 <div class="absolute bottom-6 left-6 right-6 hidden md:block text-left">
                     <p class="text-gray-800 dark:text-white/80 text-sm font-medium tracking-wide italic">"Welcome back
@@ -39,6 +35,7 @@
 
             <div class="w-full md:w-7/12 p-8 sm:p-12 flex flex-col justify-center">
                 <div class="text-left mb-8">
+                    
                     <h1
                         class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 uppercase tracking-widest drop-shadow-sm mb-2">
                         Sign In
@@ -47,12 +44,12 @@
                         RAMEN account</p>
                 </div>
 
-                <% if (typeof error !=="undefined" && error) { %>
+                <% if (typeof message !=="undefined" && message) { %>
                     <div class="flex items-start sm:items-center gap-3 p-4 mb-6 text-sm border rounded-xl bg-red-50 border-red-200 text-red-600 dark:bg-red-900/20 dark:border-red-800/50 dark:text-red-400 transition-colors duration-300 shadow-sm"
                         role="alert">
                         <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0 mt-0.5 sm:mt-0"></i>
                         <p class="font-medium leading-relaxed">
-                            <%= error %>
+                            <%= message %>
                         </p>
                     </div>
                     <% } %>

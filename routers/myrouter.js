@@ -4,7 +4,7 @@ const multer = require("multer");
 
 const connectDB = require("../config/db");
 const Reservations = require("../models/reservation");
-const Ingredient = require("../models/inventory")
+const Ingredient = require("../models/inventory");
 const Promotion = require("../models/promotion");
 const Employee = require("../models/employees");
 const Product = require("../models/products");
@@ -16,8 +16,8 @@ const authadmin = (req, res, next) => {
   if (req.session && req.session.user && req.session.user.role === "admin") {
     return next();
   }
-  if(req.session && req.session.user && req.session.user.role === "staff"){
-   return res.redirect("/pos");
+  if (req.session && req.session.user && req.session.user.role === "staff") {
+    return res.redirect("/pos");
   }
   res.redirect("/");
 };
@@ -65,16 +65,28 @@ const uploadPromotion = multer({ storage: promotionStorage });
 
 router.use(async (req, res, next) => {
   try {
-    let count = 0;
-    if (req.session.user) {
-      const Cart = require("../models/cart");
-      const cart = await Cart.findOne({ user: req.session.user._id });
+    res.locals.user = req.session.user || null;
 
-      if (cart && cart.items.length > 0) {
-        count = cart.items.reduce((acc, item) => acc + item.quantity, 0);
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+
+    let totalItems = 0;
+    if (req.session.user) {
+      const cart = await Cart.findOne({ user: req.session.user._id });
+      if (cart) {
+        totalItems += cart.items.reduce((acc, item) => acc + item.quantity, 0);
+      }
+
+      if (req.session.cart) {
+        totalItems += req.session.cart.reduce(
+          (acc, item) => acc + item.quantity,
+          0,
+        );
       }
     }
-    res.locals.cartCount = count;
+
+    res.locals.cartCount = totalItems;
     next();
   } catch (error) {
     res.locals.cartCount = 0;
@@ -93,8 +105,39 @@ router.get("/", async (req, res) => {
       title: title,
       products: products,
       promotions: promotions,
+      user: req.session.user || null,
     });
   } catch (err) {
+    res.status(500).json({ message: "ServerError", error: err.message });
+  }
+});
+
+router.get("/search", async (req, res) => {
+  try {
+    const query = req.query.q;
+    const results = await Product.find({
+      name: { $regex: query, $options: "i" },
+    }).limit(5);
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/product/:id", async (req, res) => {
+  try {
+    const products = await Product.findById(req.params.id);
+
+    if (!products) {
+      return res.status(404).send("Product not found");
+    }
+
+    res.render("product", {
+      products: products,
+      title: products.name,
+    });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "ServerError", error: err.message });
   }
 });
@@ -112,7 +155,7 @@ router.get("/menu", async (req, res) => {
   }
 });
 
-router.get("/members", authemployee ,async (req, res) => {
+router.get("/members", authemployee, async (req, res) => {
   try {
     const title = "Member List";
     const members = await Member.find();
@@ -122,7 +165,7 @@ router.get("/members", authemployee ,async (req, res) => {
   }
 });
 
-router.get("/reservations",authemployee, async (req, res) => {
+router.get("/reservations", authemployee, async (req, res) => {
   try {
     const title = "Reservations";
     const reservations = Reservations.find();
@@ -132,7 +175,7 @@ router.get("/reservations",authemployee, async (req, res) => {
   }
 });
 
-router.get("/promotions",authemployee, async (req, res) => {
+router.get("/promotions", authemployee, async (req, res) => {
   try {
     try {
       const title = "Promotion Management";
@@ -146,28 +189,60 @@ router.get("/promotions",authemployee, async (req, res) => {
   }
 });
 
-router.get("/promotions/add",authemployee, async (req, res) => {
+router.get("/promotions/add", authemployee, async (req, res) => {
   try {
     const title = "Add Promotion";
-    res.render("Dashboard/promotion/promotionsform", { title });
+    const products = await Product.find().sort({ name: 1 });
+    res.render("Dashboard/promotion/promotionsform", { title, products });
   } catch (err) {
     res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 
-router.post("/promotions/add",authemployee, uploadPromotion.single("imageFilename"),
+router.post(
+  "/promotions/add",
+  authemployee,
+  uploadPromotion.single("imageFilename"),
   async (req, res) => {
     try {
-      const newPromotion = new Promotion({
-        title: req.body.title,
-        description: req.body.description,
+      let {
+        title,
+        description,
+        startDate,
+        endDate,
+        isActive,
+        applicableItems,
+        discountPercent,
+      } = req.body;
+
+      if (!Array.isArray(applicableItems)) {
+        applicableItems = [applicableItems];
+      }
+
+      const selectedItems = await Product.find({
+        _id: { $in: applicableItems },
+      });
+      const originalPrice = selectedItems.reduce(
+        (sum, item) => sum + item.price,
+        0,
+      );
+      const percent = parseFloat(discountPercent) || 0;
+      const discountedPrice = originalPrice - originalPrice * (percent / 100);
+
+      const newPromo = new Promotion({
+        title,
+        description,
         imageFilename: req.file.filename,
-        isActive: req.body.isActive === "on",
-        startDate: req.body.startDate,
-        endDate: req.body.endDate,
+        startDate,
+        endDate,
+        isActive: isActive === "on",
+        applicableItems,
+        originalPrice,
+        discountPercent: percent,
+        discountedPrice,
       });
 
-      await newPromotion.save();
+      await newPromo.save();
       res.redirect("/promotions");
     } catch (err) {
       res.status(500).send(err.message);
@@ -180,21 +255,73 @@ router.post("/promotions/delete/:id", authemployee, async (req, res) => {
     await Promotion.findByIdAndDelete(req.params.id);
     res.redirect("/promotions");
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 
-router.get("/menus",authemployee, async (req, res) => {
+router.post("/cart/add-bundle", async (req, res) => {
+  try {
+    const { promoId } = req.body;
+    const promo = await Promotion.findById(promoId);
+    if (!promo) return res.json({ success: false });
+
+    if (!req.session.cart) req.session.cart = [];
+    req.session.cart.push({
+      _id: promo._id,
+      name: promo.title,
+      price: promo.discountedPrice,
+      image: promo.imageFilename,
+      quantity: 1,
+      isBundle: true,
+    });
+
+    let dbCount = 0;
+    if (req.session.user) {
+      const Cart = require("../models/cart");
+      const cart = await Cart.findOne({ user: req.session.user._id });
+      dbCount = cart
+        ? cart.items.reduce((acc, item) => acc + item.quantity, 0)
+        : 0;
+    }
+    const sessionCount = req.session.cart.reduce(
+      (acc, item) => acc + item.quantity,
+      0,
+    );
+
+    res.json({
+      success: true,
+      newCount: dbCount + sessionCount,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false });
+  }
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const products = await Product.find();
+    const promos = await Promotion.find({ isActive: true });
+    res.render("index", {
+      products: products,
+      promotions: promos,
+      user: req.session.user || null,
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+router.get("/menus", authemployee, async (req, res) => {
   try {
     const title = "Menu Management";
     const menus = await Product.find();
     res.render("Dashboard/menu/menu", { menus, title });
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 
-router.get("/menus/add",authemployee, (req, res) => {
+router.get("/menus/add", authemployee, (req, res) => {
   try {
     const title = "Menu Form";
     res.render("Dashboard/menu/menuform", { title });
@@ -203,97 +330,112 @@ router.get("/menus/add",authemployee, (req, res) => {
   }
 });
 
-router.get("/menus/edit/:id",authemployee, async (req, res) => {
+router.get("/menus/edit/:id", authemployee, async (req, res) => {
   try {
     const title = "Menu Edit";
     const menu = await Product.findById(req.params.id);
     res.render("Dashboard/menu/menuedit", { menu, title });
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 
-router.post("/menus/add",authemployee, upload.single("image"), async (req, res) => {
-  try {
-    req.body.isAvailable = req.body.isAvailable === "on";
-    if (req.file) {
-      req.body.image = req.file.filename;
-    } else {
-      req.body.image = "default-menu.png";
+router.post(
+  "/menus/add",
+  authemployee,
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      req.body.isAvailable = req.body.isAvailable === "on";
+      if (req.file) {
+        req.body.image = req.file.filename;
+      } else {
+        req.body.image = "default-menu.png";
+      }
+      await new Product(req.body).save();
+      res.redirect("/menus");
+    } catch (err) {
+      res.status(500).json({ message: "Server Error", error: err.message });
     }
-    await new Product(req.body).save();
-    res.redirect("/menus");
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
+  },
+);
 
-router.post("/menus/edit/:id",authemployee, upload.single("image"), async (req, res) => {
-  try {
-    req.body.isAvailable = req.body.isAvailable === "on";
-    if (req.file) {
-      req.body.image = req.file.filename;
+router.post(
+  "/menus/edit/:id",
+  authemployee,
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      req.body.isAvailable = req.body.isAvailable === "on";
+      if (req.file) {
+        req.body.image = req.file.filename;
+      }
+      await Product.findByIdAndUpdate(req.params.id, req.body);
+      res.redirect("/menus");
+    } catch (err) {
+      res.status(500).json({ message: "Server Error", error: err.message });
     }
-    await Product.findByIdAndUpdate(req.params.id, req.body);
-    res.redirect("/menus");
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
+  },
+);
 
-router.post("/menu/delete/:id",authemployee, async (req, res) => {
+router.post("/menu/delete/:id", authemployee, async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
     res.redirect("/menus");
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 
-router.get("/orders",authemployee, async (req, res) => {
+router.get("/orders", authemployee, async (req, res) => {
   try {
     const title = "Order Use";
     const orders = await Order.find().sort({ createdAt: -1 });
     res.render("Dashboard/order/orders", { orders, title });
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 
-router.post("/orders/cancel/:id",authemployee, async (req, res) => {
+router.post("/orders/cancel/:id", authemployee, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ message: "Order not found" });
 
-    const diffInMinutes = (new Date() - new Date(order.createdAt)) / (1000 * 60);
+    const diffInMinutes =
+      (new Date() - new Date(order.createdAt)) / (1000 * 60);
 
     if (diffInMinutes > 2) {
-      return res.status(400).json({ message: "Cancellation time (2 mins) has expired." });
+      return res
+        .status(400)
+        .json({ message: "Cancellation time (2 mins) has expired." });
     }
 
     if (order.status.toLowerCase() !== "preparing") {
-      return res.status(400).json({ message: "Order is already being processed or completed." });
+      return res
+        .status(400)
+        .json({ message: "Order is already being processed or completed." });
     }
 
     order.status = "cancelled";
     await order.save();
     res.sendStatus(200);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 
-router.post("/orders/update-status/:id",authemployee, async (req, res) => {
+router.post("/orders/update-status/:id", authemployee, async (req, res) => {
   try {
     const { status } = req.body;
     await Order.findByIdAndUpdate(req.params.id, { status });
     res.sendStatus(200);
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 
-router.get("/orders/view/:id",authemployee, async (req, res) => {
+router.get("/orders/view/:id", authemployee, async (req, res) => {
   try {
     const title = "Order Views";
     let order = await Order.findById(req.params.id).lean();
@@ -311,11 +453,11 @@ router.get("/orders/view/:id",authemployee, async (req, res) => {
 
     res.render("Dashboard/order/orderviews", { order, title });
   } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 
-router.post("/orders/delete/:id",authemployee, async (req, res) => {
+router.post("/orders/delete/:id", authemployee, async (req, res) => {
   try {
     await Order.findByIdAndDelete(req.params.id);
     res.redirect("/orders");
@@ -511,7 +653,7 @@ router.get("/dashboard", authadmin, async (req, res) => {
   }
 });
 
-router.get("/pos",authemployee, async (req, res) => {
+router.get("/pos", authemployee, async (req, res) => {
   try {
     const title = "POS Terminal";
     const now = new Date();
@@ -578,9 +720,10 @@ router.get("/pos",authemployee, async (req, res) => {
   }
 });
 
-router.post("/pos/checkout",authemployee, async (req, res) => {
+router.post("/pos/checkout", authemployee, async (req, res) => {
   try {
-    const { items, totalAmount, paymentMethod, customerPhone, pointsToAdd } = req.body;
+    const { items, totalAmount, paymentMethod, customerPhone, pointsToAdd } =
+      req.body;
 
     let memberId = null;
     let displayName = "Walk-in";
@@ -590,7 +733,7 @@ router.post("/pos/checkout",authemployee, async (req, res) => {
       if (member) {
         member.points = (member.points || 0) + pointsToAdd;
         await member.save();
-        
+
         memberId = member._id;
         displayName = member.name;
       } else {
@@ -610,18 +753,18 @@ router.post("/pos/checkout",authemployee, async (req, res) => {
     await newOrder.save();
     res.status(200).json({ message: "Success" });
   } catch (err) {
-   console.error(err);
+    console.error(err);
     res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
 
 router.get("/inventory", async (req, res) => {
   try {
-    const title = "Inventory Manage"
+    const title = "Inventory Manage";
     const ingredients = await Ingredient.find().sort({ name: 1 });
-    res.render("Dashboard/inventory/inventorys", { ingredients,title });
+    res.render("Dashboard/inventory/inventorys", { ingredients, title });
   } catch (err) {
-   console.error(err);
+    console.error(err);
     res.status(500).json({ message: "Server Error", error: err.message });
   }
 });
@@ -629,9 +772,9 @@ router.get("/inventory", async (req, res) => {
 router.post("/inventory/refill/:id", async (req, res) => {
   try {
     const { amount } = req.body;
-    await Ingredient.findByIdAndUpdate(req.params.id, { 
+    await Ingredient.findByIdAndUpdate(req.params.id, {
       $inc: { quantity: parseInt(amount) },
-      lastUpdated: Date.now()
+      lastUpdated: Date.now(),
     });
     res.sendStatus(200);
   } catch (err) {
@@ -645,11 +788,14 @@ router.post("/orders/update-status/:id", async (req, res) => {
     const { status } = req.body;
     const order = await Order.findById(req.params.id);
 
-    if (status.toLowerCase() === 'completed' && order.status.toLowerCase() !== 'completed') {
+    if (
+      status.toLowerCase() === "completed" &&
+      order.status.toLowerCase() !== "completed"
+    ) {
       for (const item of order.items) {
         await Ingredient.findOneAndUpdate(
           { name: item.menuName },
-          { $inc: { quantity: -item.quantity } }
+          { $inc: { quantity: -item.quantity } },
         );
       }
     }
@@ -658,7 +804,7 @@ router.post("/orders/update-status/:id", async (req, res) => {
     await order.save();
     res.sendStatus(200);
   } catch (err) {
-   console.error(err);
+    console.error(err);
     res.status(500).json({ message: "Server Error", error: err.message });
   }
 });

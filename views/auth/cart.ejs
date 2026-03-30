@@ -174,10 +174,20 @@
             });
         }
         
-        async function updateQuantity(productId, action) {
+       async function updateQuantity(productId, action) {
             try {
                 const res = await axios.post('/cart/update', { productId, action });
                 if (res.data.success) {
+                    const badge = document.getElementById("cart-count-badge");
+                    if (badge) {
+                        badge.innerText = res.data.newCount;
+                        if (res.data.newCount === 0) {
+                            badge.classList.add('hidden'); 
+                        } else {
+                            badge.classList.remove('hidden');
+                        }
+                    }
+
                     location.reload(); 
                 }
             } catch (error) {
@@ -185,20 +195,40 @@
             }
         }
 
-        async function removeItem(productId) {
-            const isConfirmed = await showConfirmModal('Are you sure you want to remove this item?');
-            
-            if(!isConfirmed) return;
-            
-            try {
-                const res = await axios.post('/cart/remove', { productId });
-                if(res.data.success) {
-                    location.reload();
+    async function removeItem(productId) {
+        const isConfirmed = await showConfirmModal('Are you sure you want to remove this item?');
+        if(!isConfirmed) return;
+        
+        try {
+            const res = await axios.post('/cart/remove', { productId });
+            if(res.data.success) {
+                const badge = document.getElementById("cart-count-badge");
+                if (badge) {
+                    badge.innerText = res.data.newCount;
+                    if (res.data.newCount === 0) badge.classList.add('hidden');
                 }
-            } catch (error) {
-                console.error(error);
+
+                const itemElement = document.getElementById(`item-${productId}`);
+                if (itemElement) {
+                    itemElement.style.opacity = '0';
+                    itemElement.style.transform = 'translateX(20px)';
+                    itemElement.style.transition = 'all 0.3s ease';
+
+                    setTimeout(() => {
+                        itemElement.remove();
+
+                        const remainingItems = document.querySelectorAll('[id^="item-"]');
+                        if (remainingItems.length === 0) {
+                            location.reload(); 
+                        }
+                    }, 300);
+                }
             }
+        } catch (error) {
+            console.error("Remove Error:", error);
+            alert("Cannot remove item. Please try again.");
         }
+    }   
     </script>
     </body>
 </html>
