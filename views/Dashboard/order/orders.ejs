@@ -50,16 +50,17 @@
                       <div class="text-base font-black text-kaizen-red dark:text-kaizen-orange">฿<%= order.totalAmount.toLocaleString() %></div>
                     </td>
                     <td class="px-6 py-5">
-                  <select onchange="updateOrderStatus('<%= order._id %>', this)" 
-        class="appearance-none cursor-pointer px-4 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider border-none outline-none transition-all text-white
-        <%= (order.status && order.status.toLowerCase() === 'completed') ? 'bg-emerald-500' : 
-            (order.status && order.status.toLowerCase() === 'preparing') ? 'bg-sky-500' : 
-            (order.status && order.status.toLowerCase() === 'cancelled') ? 'bg-red-500' : 'bg-zinc-600' %>">
-    
-    <option value="Preparing" class="bg-white text-zinc-900" <%= (order.status && order.status.toLowerCase() === 'preparing') ? 'selected' : '' %>>Preparing</option>
-    <option value="Completed" class="bg-white text-zinc-900" <%= (order.status && order.status.toLowerCase() === 'completed') ? 'selected' : '' %>>Completed</option>
-    <option value="Cancelled" class="bg-white text-zinc-900" <%= (order.status && order.status.toLowerCase() === 'cancelled') ? 'selected' : '' %>>Cancelled</option>
-</select>
+
+                  <select onchange="updateOrderStatus('<%= order._id %>', this)" class="appearance-none cursor-pointer px-4 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider border-none outline-none transition-all text-white
+                    <%= (order.status && order.status.toLowerCase() === 'completed') ? 'bg-emerald-500' : 
+                    (order.status && order.status.toLowerCase() === 'preparing') ? 'bg-sky-500' : 
+                    (order.status && order.status.toLowerCase() === 'cancelled') ? 'bg-red-500' : 'bg-zinc-600' %>">
+
+                    <option value="Preparing" class="bg-white text-zinc-900" <%= (order.status && order.status.toLowerCase() === 'preparing') ? 'selected' : '' %>>Preparing</option>
+                    <option value="Completed" class="bg-white text-zinc-900" <%= (order.status && order.status.toLowerCase() === 'completed') ? 'selected' : '' %>>Completed</option>
+                    <option value="Cancelled" class="bg-white text-zinc-900" <%= (order.status && order.status.toLowerCase() === 'cancelled') ? 'selected' : '' %>>Cancelled</option>
+                  </select>
+
                     </td>
                     <td class="px-6 py-5 text-right">
                       <div class="inline-flex items-center space-x-3">
