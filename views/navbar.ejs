@@ -16,14 +16,25 @@
 
             <div class="h-8 w-[1px] bg-white/20 mx-2 hidden lg:block"></div>
 
-         <div class="relative hidden sm:flex items-center mr-2">
-    <input type="text" placeholder="Search..." class="bg-black/20 dark:bg-white/10 text-white placeholder-white/70 pl-4 pr-10 py-1.5 rounded-full outline-none focus:bg-black/30 dark:focus:bg-white/20 border border-white/10 text-sm transition-all duration-300 w-32 focus:w-48">
-    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-        <i data-lucide="search" class="w-4 h-4 text-white/80"></i>
+   <div class="relative hidden sm:flex items-center mr-2">
+    <div class="relative">
+        <input type="text" 
+               id="searchInput"
+               onkeyup="searchMenu()" 
+               autocomplete="off"
+               placeholder="Search..." 
+               class="bg-black/20 dark:bg-white/10 text-white pl-4 pr-10 py-1.5 rounded-full outline-none border border-white/10 text-sm w-32 focus:w-48 transition-all">
+        
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <i data-lucide="search" class="w-4 h-4 text-white/50"></i>
+        </div>
+
+        <div id="searchResults" class="absolute left-0 mt-2 w-64 bg-stone-900 border border-white/10 rounded-lg shadow-2xl hidden overflow-hidden z-[100]">
+        </div>
     </div>
 </div>
 
-<button class="sm:hidden w-9 h-9 text-white hover:bg-white/20 rounded-full transition duration-300 flex items-center justify-center mr-2">
+<button onclick="toggleMobileSearch()" class="sm:hidden w-9 h-9 text-white hover:bg-white/20 rounded-full transition duration-300 flex items-center justify-center mr-2">
     <i data-lucide="search" class="w-5 h-5"></i>
 </button>
             <button class="sm:hidden w-9 h-9 text-white hover:bg-white/20 rounded-full transition duration-300 flex items-center justify-center"></button>
@@ -103,5 +114,46 @@
             }
         }
     }
+
+    async function searchMenu() {
+    const input = document.getElementById('searchInput');
+    const resultsContainer = document.getElementById('searchResults');
+    const query = input.value.trim();
+
+    if (query.length < 1) {
+        resultsContainer.innerHTML = '';
+        resultsContainer.classList.add('hidden');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/search?q=${query}`);
+        const products = await response.json();
+
+        resultsContainer.innerHTML = '';
+
+        if (products.length > 0) {
+            products.forEach(product => {
+                const div = document.createElement('div');
+                div.className = "px-4 py-2 hover:bg-orange-600 text-white text-sm cursor-pointer flex justify-between items-center border-b border-white/5 last:border-0";
+                
+                div.innerHTML = `
+                    <span>${product.name}</span>
+                    <span class="text-xs text-gray-400">${product.price}.-</span>
+                `;
+
+                div.onclick = () => window.location.href = `/product/${product._id}`;
+                
+                resultsContainer.appendChild(div);
+            });
+            resultsContainer.classList.remove('hidden');
+        } else {
+            resultsContainer.innerHTML = '<div class="px-4 py-2 text-gray-500 text-xs">ไม่พบเมนูนี้</div>';
+            resultsContainer.classList.remove('hidden');
+        }
+    } catch (err) {
+        console.error('Search error:', err);
+    }
+}
 </script>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>

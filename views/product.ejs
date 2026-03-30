@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('head.ejs') %>
+</head>
+<body class="bg-white dark:bg-[#0a0f1a] text-gray-900 dark:text-white transition-colors duration-500">
+    <%- include('navbar.ejs') %>
+
+    <div class="container mx-auto px-6 py-20 max-w-6xl">
+        <div class="flex flex-col lg:flex-row gap-16 items-center">
+            <div class="w-full lg:w-1/2 relative">
+                <div class="absolute inset-0 bg-orange-500/10 dark:bg-orange-500/20 blur-[100px] rounded-full"></div>
+                <div class="relative z-10 p-4 border-4 border-gray-100 dark:border-white/10 rounded-full shadow-2xl bg-white dark:bg-transparent">
+                    <img src="/images/product/<%= products.image %>" 
+                         alt="<%= products.name %>"
+                         class="w-full h-auto rounded-full object-cover aspect-square hover:scale-105 transition-transform duration-700">
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/2 space-y-8">
+                <div>
+                    <span class="px-4 py-1.5 bg-orange-600 text-white rounded-full text-[10px] font-black tracking-[0.2em] uppercase">
+                        <%= products.category %>
+                    </span>
+                    <h1 class="text-6xl lg:text-7xl font-black text-gray-900 dark:text-white mt-6 leading-none tracking-tighter uppercase">
+                        <%= products.name %>
+                    </h1>
+                    <div class="flex items-center gap-3 mt-6">
+                        <span class="text-3xl font-bold text-orange-600">฿</span>
+                        <span class="text-6xl font-black text-gray-900 dark:text-white leading-none"><%= products.price %></span>
+                    </div>
+                </div>
+
+                <p class="text-gray-500 dark:text-gray-400 text-lg leading-relaxed">
+                    <%= products.description || 'Experience the authentic taste of our hand-crafted ramen.' %>
+                </p>
+
+                <div class="grid grid-cols-2 gap-4 border-y border-gray-100 dark:border-gray-800 py-8">
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">Broth Base</p>
+                        <p class="text-xl font-bold italic text-gray-800 dark:text-gray-200"><%= products.brothType %></p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">Noodle Style</p>
+                        <p class="text-xl font-bold italic text-gray-800 dark:text-gray-200"><%= products.noodleType %></p>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <% if (locals.user) { %>
+                        <button onclick="addToCart('<%= products._id %>')" 
+                                class="group relative w-full lg:w-3/4 py-6 bg-orange-600 text-white rounded-2xl font-black text-xl uppercase tracking-[0.1em] overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_rgba(234,88,12,0.3)] active:scale-[0.98]">
+                            <div class="absolute inset-0 w-0 bg-white opacity-20 transition-all duration-500 group-hover:w-full"></div>
+                            <span class="relative z-10 flex items-center justify-center gap-3">
+                                Add to Order
+                                <i data-lucide="plus" class="w-6 h-6 group-hover:rotate-90 transition-transform duration-500"></i>
+                            </span>
+                        </button>
+                    <% } else { %>
+                        <a href="/signin" 
+                           class="group relative block w-full lg:w-3/4 py-6 bg-gray-900 dark:bg-white text-white dark:text-black rounded-2xl font-black text-xl uppercase tracking-[0.1em] overflow-hidden transition-all duration-500 hover:bg-orange-600 hover:text-white text-center shadow-xl active:scale-[0.98]">
+                            <div class="absolute inset-0 w-0 bg-orange-600 transition-all duration-500 group-hover:w-full"></div>
+                            <span class="relative z-10 flex items-center justify-center gap-3">
+                                Sign in to Order
+                                <i data-lucide="arrow-right" class="w-6 h-6 group-hover:translate-x-2 transition-transform"></i>
+                            </span>
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        lucide.createIcons();
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            lucide.createIcons();
+            updateChartTheme();
+        } 
+
+
+        function showToast(message, isSuccess = true) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = isSuccess ? 'bg-green-600' : 'bg-red-600';
+            const iconName = isSuccess ? 'check-circle' : 'alert-circle';
+
+            toast.className = `flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl text-white transform transition-all duration-300 translate-y-10 opacity-0 pointer-events-auto ${bgColor}`;
+            toast.innerHTML = `<i data-lucide="${iconName}" class="w-5 h-5 flex-shrink-0"></i><span class="font-bold text-sm tracking-wide">${message}</span>`;
+
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        async function addToCart(productId) {
+            try {
+                const res = await axios.post('/cart/add', { 
+                    productId: productId,
+                    quantity: 1
+                });
+                
+                if(res.data.success) {
+                    showToast(res.data.message || 'Added to order!', true); 
+                    const badge = document.getElementById('cart-count-badge');
+                    if (badge && res.data.newCount !== undefined) {
+                        badge.innerText = res.data.newCount; 
+                        badge.classList.remove('hidden');  
+                    }
+                } else {
+                    showToast(res.data.message || 'Error', false);
+                }
+            } catch (error) {
+                showToast('System Error', false);
+            }
+        }
+    </script>
+</body>
+</html>
