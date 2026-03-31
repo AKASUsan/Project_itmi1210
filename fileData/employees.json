@@ -3,7 +3,7 @@
         "_id": {
             "$oid": "69b5c0103a60fd04a18563b2"
         },
-        "name": "AKASUKA",
+        "name": "K",
         "email": "k@gmail.com",
         "phone": "099999999",
         "image": "default-employee.png",
