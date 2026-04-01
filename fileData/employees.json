@@ -3,9 +3,9 @@
         "_id": {
             "$oid": "69b5c0103a60fd04a18563b2"
         },
-        "name": "AKASUKA",
+        "name": "K",
         "email": "k@gmail.com",
-        "phone": "0809528945",
+        "phone": "099999999",
         "image": "default-employee.png",
         "password": "$2a$12$LFx1DpmObl1/UQKiVHtCSujsxyskTV8hw/lo7mW.tAOdWWyYSs2qi",
         "role": "admin",
@@ -25,7 +25,7 @@
         "name": "A",
         "email": "a@gmail.com",
         "image": "default-employee.png",
-        "phone": "0809528945",
+        "phone": "099999999",
         "password": "$2b$10$jV.hOxfqZiq6zSNEZGGXbOedplG9tTXEfwl41sOTnsTo.nwQ.Ck3a",
         "role": "staff",
         "salary": 10000,
